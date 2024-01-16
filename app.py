@@ -35,8 +35,6 @@ fetch = PubMedFetcher()
 
 def upload_clicked():
     st.session_state.clicked = True
-def download_clicked():
-    st.session_state.clicked = True
 
 def extract_articles_from_pmids(pmids):
     progress_text = "Extrayendo informacion de artículos"
@@ -183,12 +181,16 @@ def check_ciber():
 
 
 def save_results():
+    prod.drop(columns=['authors_full_name_normalized','ciber', 'email'], inplace=True)
+    xlm =  prod.to_excel(f'results/registro_publicaciones_{today.day}-{today.month}-{today.year}..xlsx', index = None, header=True)
 
-    st.button('Descargar Resultados', on_click=download_clicked)
-    if st.session_state.clicked:
-        prod.drop(columns=['authors_full_name_normalized','ciber', 'email'], inplace=True)
-        prod.to_excel(f'results/registro_publicaciones_{today.day}-{today.month}-{today.year}..xlsx', index = None, header=True)
-        st.write('Resultados guardados correctamente')
+    st.download_button(
+        label="Descargar resultados en Excel",
+        data=xlm,
+        file_name=f'results/registro_publicaciones_{today.day}-{today.month}-{today.year}.xlsx',
+        mime='text/xlsx',
+    )
+    st.write('Resultados guardados correctamente')
 
 
 def create_dataframe(pmids_file, authors_file, jcr_file):
