@@ -33,6 +33,11 @@ current_year = '2022' # CHANGE !!!!!!
 # ------------------ Functions ------------------ #
 fetch = PubMedFetcher()
 
+def upload_clicked():
+    st.session_state.clicked = True
+def download_clicked():
+    st.session_state.clicked = True
+
 def extract_articles_from_pmids(pmids):
     progress_text = "Extrayendo informacion de artículos"
     my_bar = st.progress(0, text=progress_text)
@@ -179,12 +184,11 @@ def check_ciber():
 
 def save_results():
 
-    st.button('Descargar Resultados', on_click=set_clicked)
+    st.button('Descargar Resultados', on_click=download_clicked)
     if st.session_state.clicked:
         prod.drop(columns=['authors_full_name_normalized','ciber', 'email'], inplace=True)
         prod.to_excel(f'results/registro_publicaciones_{today.day}-{today.month}-{today.year}..xlsx', index = None, header=True)
         st.write('Resultados guardados correctamente')
-        st.session_state.clicked = False
 
 
 def create_dataframe(pmids_file, authors_file, jcr_file):
@@ -209,8 +213,6 @@ def create_dataframe(pmids_file, authors_file, jcr_file):
 
     st.write('Autores identificados correctamente')
 
-def set_clicked():
-    st.session_state.clicked = True
 if __name__ == "__main__":
     uploaded_file_pmids = st.file_uploader("Carga el archivo de pmids")
     uploaded_file_authors= st.file_uploader("Carga el archivo de autores")
@@ -219,10 +221,9 @@ if __name__ == "__main__":
     if 'clicked' not in st.session_state:
         st.session_state.clicked = False
 
-    st.button('Cargar Archivos', on_click=set_clicked)
+    st.button('Cargar Archivos', on_click=upload_clicked)
 
     if st.session_state.clicked and uploaded_file_pmids is not None and uploaded_file_authors is not None and uploaded_file_jcr is not None:
-        st.session_state.clicked = False
         st.write('Archivos cargados correctamente')
         create_dataframe(uploaded_file_pmids,uploaded_file_authors,uploaded_file_jcr) 
         save_results()
