@@ -179,10 +179,14 @@ def check_ciber():
                             if row.ciber == 1 and check_cibercv(row) == True
                             else 0, axis=1)
 
+@st.cache
+def convert_df(df):
+    # IMPORTANT: Cache the conversion to prevent computation on every rerun
+    return df.to_excel().encode('utf-8')
 
 def save_results():
     prod.drop(columns=['authors_full_name_normalized','ciber', 'email'], inplace=True)
-    xlm =  prod.to_excel(f'results/registro_publicaciones_{today.day}-{today.month}-{today.year}..xlsx', index = None, header=True)
+    xlm = convert_df(prod)
 
     st.download_button(
         label="Descargar resultados en Excel",
