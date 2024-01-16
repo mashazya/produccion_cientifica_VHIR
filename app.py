@@ -5,6 +5,7 @@ import unicodedata
 from fuzzywuzzy import fuzz
 import datetime
 import re
+from io import BytesIO
 import streamlit as st
 import time
 
@@ -181,8 +182,16 @@ def check_ciber():
 
 @st.cache
 def convert_df(df):
-    # IMPORTANT: Cache the conversion to prevent computation on every rerun
-    return df.to_excel().encode('utf-8')
+    output = BytesIO()
+    writer = pd.ExcelWriter(output, engine='xlsxwriter')
+    df.to_excel(writer, index=False, sheet_name='registros')
+    workbook = writer.book
+    worksheet = writer.sheets['registros']
+    format1 = workbook.add_format({'num_format': '0.00'}) 
+    worksheet.set_column('A:A', None, format1)  
+    writer.save()
+    processed_data = output.getvalue()
+    return processed_data
 
 def save_results():
     prod.drop(columns=['authors_full_name_normalized','ciber', 'email'], inplace=True)
