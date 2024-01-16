@@ -1,14 +1,11 @@
 import pandas as pd
-from tqdm import tqdm
 import xmltodict
 from metapub import PubMedFetcher
 import unicodedata 
 from fuzzywuzzy import fuzz
 import datetime
 import re
-import argparse
 import streamlit as st
-from io import StringIO
 import time
 
 
