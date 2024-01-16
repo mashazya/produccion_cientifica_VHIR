@@ -1,5 +1,3 @@
-appnope @ file:///home/conda/feedstock_root/build_artifacts/appnope_1649077682618/work
-asttokens @ file:///home/conda/feedstock_root/build_artifacts/asttokens_1698341106958/work
 attrs==23.2.0
 biopython==1.81
 blinker==1.7.0
@@ -10,17 +8,12 @@ charset-normalizer==3.3.2
 click==8.1.7
 colorama==0.4.6
 coloredlogs==15.0.1
-comm @ file:///home/conda/feedstock_root/build_artifacts/comm_1691044910542/work
 crossrefapi==1.6.0
 cssselect==1.2.0
-debugpy @ file:///Users/runner/miniforge3/conda-bld/debugpy_1695534362385/work
-decorator @ file:///home/conda/feedstock_root/build_artifacts/decorator_1641555617451/work
 distlib==0.3.7
 docopt==0.6.2
 et-xmlfile==1.1.0
 eutils==0.6.0
-exceptiongroup @ file:///home/conda/feedstock_root/build_artifacts/exceptiongroup_1700579780973/work
-executing @ file:///home/conda/feedstock_root/build_artifacts/executing_1698579936712/work
 filelock==3.13.1
 fuzzywuzzy==0.18.0
 gitdb==4.0.11
@@ -28,75 +21,47 @@ GitPython==3.1.41
 habanero==1.2.3
 humanfriendly==10.0
 idna==3.6
-importlib-metadata @ file:///home/conda/feedstock_root/build_artifacts/importlib-metadata_1701632192416/work
 iniconfig==2.0.0
-ipykernel @ file:///Users/runner/miniforge3/conda-bld/ipykernel_1698244280508/work
-ipython @ file:///home/conda/feedstock_root/build_artifacts/ipython_1701831663892/work
-jedi @ file:///home/conda/feedstock_root/build_artifacts/jedi_1696326070614/work
 Jinja2==3.1.3
 jsonschema==4.20.0
 jsonschema-specifications==2023.12.1
-jupyter_client @ file:///home/conda/feedstock_root/build_artifacts/jupyter_client_1699283905679/work
-jupyter_core @ file:///Users/runner/miniforge3/conda-bld/jupyter_core_1698673720590/work
 Levenshtein==0.23.0
 lxml==4.9.3
 markdown-it-py==3.0.0
 MarkupSafe==2.1.3
-matplotlib-inline @ file:///home/conda/feedstock_root/build_artifacts/matplotlib-inline_1660814786464/work
 mdurl==0.1.2
 metapub==0.5.5
-nest-asyncio @ file:///home/conda/feedstock_root/build_artifacts/nest-asyncio_1697083700168/work
 numpy==1.26.2
 openpyxl==3.1.2
-packaging @ file:///home/conda/feedstock_root/build_artifacts/packaging_1696202382185/work
 pandas==2.1.4
-parso @ file:///home/conda/feedstock_root/build_artifacts/parso_1638334955874/work
-pexpect @ file:///home/conda/feedstock_root/build_artifacts/pexpect_1667297516076/work
-pickleshare @ file:///home/conda/feedstock_root/build_artifacts/pickleshare_1602536217715/work
 pillow==10.2.0
-platformdirs @ file:///home/conda/feedstock_root/build_artifacts/platformdirs_1701708255999/work
 pluggy==1.3.0
-prompt-toolkit @ file:///home/conda/feedstock_root/build_artifacts/prompt-toolkit_1699963054032/work
 protobuf==4.25.2
-psutil @ file:///Users/runner/miniforge3/conda-bld/psutil_1695367160695/work
-ptyprocess @ file:///home/conda/feedstock_root/build_artifacts/ptyprocess_1609419310487/work/dist/ptyprocess-0.7.0-py2.py3-none-any.whl
 pubmed-author-affiliation==0.3
-pure-eval @ file:///home/conda/feedstock_root/build_artifacts/pure_eval_1642875951954/work
 pyarrow==14.0.2
 pydeck==0.8.1b0
-Pygments @ file:///home/conda/feedstock_root/build_artifacts/pygments_1700607939962/work
 pyproject-api==1.6.1
 pytest==7.4.3
-python-dateutil @ file:///home/conda/feedstock_root/build_artifacts/python-dateutil_1626286286081/work
 python-Levenshtein==0.23.0
 pytz==2023.3.post1
-pyzmq @ file:///Users/runner/miniforge3/conda-bld/pyzmq_1701783269366/work
 rapidfuzz==3.5.2
 referencing==0.32.1
 rich==13.7.0
 rpds-py==0.17.1
 setuptools==68.2.2
-six @ file:///home/conda/feedstock_root/build_artifacts/six_1620240208055/work
 smmap==5.0.1
 soupsieve==2.5
-stack-data @ file:///home/conda/feedstock_root/build_artifacts/stack_data_1669632077133/work
 streamlit==1.30.0
 tabulate==0.9.0
 tenacity==8.2.3
 toml==0.10.2
 toolz==0.12.0
-tornado @ file:///Users/runner/miniforge3/conda-bld/tornado_1695373641614/work
 tox==4.11.4
-tqdm
-traitlets @ file:///home/conda/feedstock_root/build_artifacts/traitlets_1701095650114/work
-typing_extensions @ file:///home/conda/feedstock_root/build_artifacts/typing_extensions_1702176139754/work
 tzdata==2023.3
 tzlocal==5.2
 Unidecode==1.3.7
 urllib3==1.26.16
 validators==0.22.0
 virtualenv==20.25.0
-wcwidth @ file:///home/conda/feedstock_root/build_artifacts/wcwidth_1700607916581/work
 wheel==0.42.0
 xmltodict==0.13.0
-zipp @ file:///home/conda/feedstock_root/build_artifacts/zipp_1695255097490/work
