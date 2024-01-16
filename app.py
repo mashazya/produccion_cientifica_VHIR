@@ -176,10 +176,15 @@ def check_ciber():
                             if row.ciber == 1 and check_cibercv(row) == True
                             else 0, axis=1)
 
+
 def save_results():
-    st.write('Guardando resultados')
-    prod.drop(columns=['authors_full_name_normalized','ciber', 'email'], inplace=True)
-    prod.to_csv(f'results/registro_publicaciones_{today.day}-{today.month}-{today.year}.csv', index=0)
+
+    st.button('Descargar Resultados', on_click=set_clicked)
+    if st.session_state.clicked:
+        prod.drop(columns=['authors_full_name_normalized','ciber', 'email'], inplace=True)
+        prod.to_excel(f'results/registro_publicaciones_{today.day}-{today.month}-{today.year}..xlsx', index = None, header=True)
+        st.write('Resultados guardados correctamente')
+        st.session_state.clicked = False
 
 
 def create_dataframe(pmids_file, authors_file, jcr_file):
@@ -204,7 +209,8 @@ def create_dataframe(pmids_file, authors_file, jcr_file):
 
     st.write('Autores identificados correctamente')
 
-
+def set_clicked():
+    st.session_state.clicked = True
 if __name__ == "__main__":
     uploaded_file_pmids = st.file_uploader("Carga el archivo de pmids")
     uploaded_file_authors= st.file_uploader("Carga el archivo de autores")
@@ -213,13 +219,10 @@ if __name__ == "__main__":
     if 'clicked' not in st.session_state:
         st.session_state.clicked = False
 
-    def set_clicked():
-        st.session_state.clicked = True
-
     st.button('Cargar Archivos', on_click=set_clicked)
-   
 
     if st.session_state.clicked and uploaded_file_pmids is not None and uploaded_file_authors is not None and uploaded_file_jcr is not None:
+        st.session_state.clicked = False
         st.write('Archivos cargados correctamente')
         create_dataframe(uploaded_file_pmids,uploaded_file_authors,uploaded_file_jcr) 
         save_results()
