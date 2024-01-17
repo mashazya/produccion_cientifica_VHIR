@@ -14,12 +14,21 @@ import os
 # ------------------ Global Variables ------------------ #
 
 prod = pd.DataFrame(columns=[
-                            'pmid','title','day','month', 'year', 'journal','authors', 
-                            'authors_full_name','affiliations', 'email', 'doi','type','pagination',
-                            'volume','issue','group', 'epub', 'ciber', 'if_actual',
-                            'if_when_published', 'quantile_actual', 'quantile_when_published'
+                            'pmid','title', 'authors','journal','year','pagination',
+                            'volume','issue', 'day','month', 
+                            'authors_full_name','affiliations', 'email','group', 'epub', 'ciber', 'if_actual', 'quantile_actual',
+                            'if_when_published', 'quantile_when_published', 'type', 'doi'
                             ]
                     )
+#delete full name, affiliations, grupo
+# day when published (month)
+# corresponging_author_email (el mail) -> no columna 1_0
+# add email 
+# add last, fist, corresppnding (if any are last first corresponding)
+# filtar pmids unicos
+#cambiar  boton cargar archivos
+# cambiar titulos de streamlit poner solo PMIDS, AUTORES, IMPACT FACTOR
+
 names_df = pd.DataFrame()
 jcr = pd.DataFrame()
 articles = {}
@@ -195,7 +204,7 @@ def convert_df(df):
     return processed_data
 
 def save_results():
-    prod.drop(columns=['authors_full_name_normalized','ciber', 'email'], inplace=True)
+    prod.drop(columns=['authors_full_name_normalized','authors_full_name','ciber', 'email'], inplace=True)
     xlm = convert_df(prod)
     directory = './results'
     st.write('Resultados creados correctamente')
@@ -217,8 +226,8 @@ def create_dataframe(pmids_file, authors_file, jcr_file):
 
 
     df = df.dropna(subset=['pmids'])
-    df.pmids = df.apply(lambda row: int(row['pmids']), axis=1)
-    pmids = df.pmids.values[:10]
+    df.pmids = df.apply(lambda row: int(row['pmids']), axis=1).unique()
+    pmids = df.pmids.values
 
     extract_articles_from_pmids(pmids)
 
@@ -231,14 +240,14 @@ def create_dataframe(pmids_file, authors_file, jcr_file):
     st.write('Autores identificados correctamente')
 
 if __name__ == "__main__":
-    uploaded_file_pmids = st.file_uploader("Carga el archivo de pmids")
-    uploaded_file_authors= st.file_uploader("Carga el archivo de autores")
-    uploaded_file_jcr= st.file_uploader("Carga el archivo de revistas")
+    uploaded_file_pmids = st.file_uploader("PMIDS")
+    uploaded_file_authors= st.file_uploader("NOMBRES DE LOS AUTORES")
+    uploaded_file_jcr= st.file_uploader("IMPACT FACTOR")
 
     if 'clicked' not in st.session_state:
         st.session_state.clicked = False
 
-    st.button('Cargar Archivos', on_click=upload_clicked)
+    st.button('Extraer Información', on_click=upload_clicked)
 
     if st.session_state.clicked and uploaded_file_pmids is not None and uploaded_file_authors is not None and uploaded_file_jcr is not None:
         st.write('Archivos cargados correctamente')
