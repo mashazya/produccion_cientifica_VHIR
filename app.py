@@ -8,7 +8,7 @@ import re
 import streamlit as st
 from io import BytesIO
 from pyxlsb import open_workbook as open_xlsb
-import time
+import os
 
 
 # ------------------ Global Variables ------------------ #
@@ -197,16 +197,16 @@ def convert_df(df):
 def save_results():
     prod.drop(columns=['authors_full_name_normalized','ciber', 'email'], inplace=True)
     xlm = convert_df(prod)
-
+    directory = './results'
     st.write('Resultados creados correctamente')
-
+    if not os.path.exists(directory):
+        os.makedirs(directory)
     st.download_button(
         label="Descargar resultados en Excel",
         data=xlm,
-        file_name=f'results/registro_publicaciones_{today.day}-{today.month}-{today.year}.xlsx',
+        file_name=f'{directory}/registro_publicaciones_{today.day}-{today.month}-{today.year}.xlsx',
         mime='text/xlsx',
     )
-
 
 def create_dataframe(pmids_file, authors_file, jcr_file):
 # READ FILES
