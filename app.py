@@ -15,19 +15,12 @@ import os
 
 prod = pd.DataFrame(columns=[
                             'pmid','title', 'authors','journal','year','pagination',
-                            'volume','issue', 'day','month', 
-                            'authors_full_name','affiliations', 'email','group', 'epub', 'ciber', 'if_actual', 'quantile_actual',
+                            'volume','issue', 'day_when_published','month_when_published', 
+                            'authors_full_name','affiliations', 'corresponging_author_email', 'epub', 'ciber', 'if_actual', 'quantile_actual',
                             'if_when_published', 'quantile_when_published', 'type', 'doi'
                             ]
                     )
-#delete full name, affiliations, grupo
-# day when published (month)
-# corresponging_author_email (el mail) -> no columna 1_0
-# add email 
 # add last, fist, corresppnding (if any are last first corresponding)
-# filtar pmids unicos
-#cambiar  boton cargar archivos
-# cambiar titulos de streamlit poner solo PMIDS, AUTORES, IMPACT FACTOR
 
 names_df = pd.DataFrame()
 jcr = pd.DataFrame()
@@ -82,15 +75,15 @@ def extract_articles_from_pmids(pmids):
 def create_dataframe_from_articles(pmids):
     prod.pmid = pmids
     prod.title = [articles[pmid].title for pmid in pmids]
-    prod.day = [pubdate[pmid]['Day'] if 'Day' in pubdate[pmid].keys() else None for pmid in pmids]
-    prod.month = [pubdate[pmid]['Month'] if 'Month' in pubdate[pmid].keys() else None for pmid in pmids]
+    prod.day_when_published = [pubdate[pmid]['Day'] if 'Day' in pubdate[pmid].keys() else None for pmid in pmids]
+    prod.month_when_published = [pubdate[pmid]['Month'] if 'Month' in pubdate[pmid].keys() else None for pmid in pmids]
     prod.year = [articles[pmid].year for pmid in pmids]
     prod.journal = [articles[pmid].journal for pmid in pmids]
     prod.authors = ['; '.join([str(author['LastName'] + ' ' + author['Initials']) if 'ForeName' in author.keys() and 'Initials' in author.keys() else '' for author in author_list[pmid]]) for pmid in pmids]
     prod.authors_full_name = ['; '.join([str(author['LastName'] + ' ' + author['ForeName']) if 'ForeName' in author.keys() and 'LastName' in author.keys() else '' for author in author_list[pmid]]) for pmid in pmids]
-    st.write([[author['AffiliationInfo'] if 'Affiliation' not in author['AffiliationInfo'] else '' for author in author_list[pmid]] for pmid in pmids])
-    affiliations = [[author['AffiliationInfo']['Affiliation'] if 'AffiliationInfo' in author.keys() else '' for author in author_list[pmid]] for pmid in pmids]
-    affiliations = [list(filter(lambda x: x != '', affiliation)) for affiliation in affiliations]
+    affiliations_list = [[author['AffiliationInfo'] if 'AffiliationInfo' in author.keys() else '' for author in author_list[pmid]] for pmid in pmids]
+    affiliations_list = [list(filter(lambda x: x != '', affiliation)) for affiliation in affiliations_list]
+    affiliations = [[affiliation['Affiliation'] if type(affiliation)==dict else '; '.join([a['Affiliation'] for a in affiliation]) for affiliation in affiliations] for affiliations in affiliations_list]
     prod.affiliations = ['; '.join(affiliation) for affiliation in affiliations]
     prod.doi = [articles[pmid].doi for pmid in pmids]
     pubtypes = [list(articles[pmid].publication_types.values()) for pmid in pmids]
@@ -98,8 +91,6 @@ def create_dataframe_from_articles(pmids):
     prod.pagination = [str(articles[pmid].pages) for pmid in pmids]
     prod.issue = [articles[pmid].issue for pmid in pmids]
     prod.volume = [articles[pmid].volume for pmid in pmids]
-    groups = [list(filter(lambda entry: 'CollectiveName' in entry.keys(), author_list[pmid])) for pmid in pmids]
-    prod.group = ['; '.join([entry['CollectiveName'] for entry in group]) for group in groups]
     epub_year  = [epubdate[pmid]['ArticleDate']['Year'] if 'ArticleDate' in epubdate[pmid].keys() else None for pmid in pmids]
     epub_month = [epubdate[pmid]['ArticleDate']['Month'] if 'ArticleDate' in epubdate[pmid].keys() else None for pmid in pmids]
     epub_day = [epubdate[pmid]['ArticleDate']['Day'] if 'ArticleDate' in epubdate[pmid].keys() else None for pmid in pmids]
@@ -110,7 +101,7 @@ def create_dataframe_from_articles(pmids):
     prod.quantile_when_published = [jcr[jcr['Revista'] == journal]['Q' + str(year)].values[0] if 'Q' + str(year) in jcr.columns and len(jcr[jcr['Revista'] == journal]['Q' + str(year)].values) > 0 else None for journal, year in zip(prod.journal, prod.year)]
     prod.if_actual = [jcr[jcr['Revista'] == journal]['IF' + str(current_year)].values[0] if 'IF' + str(current_year) in jcr.columns and len(jcr[jcr['Revista'] == journal]['IF' + str(current_year)].values) > 0 else None for journal in prod.journal]
     prod.quantile_actual = [jcr[jcr['Revista'] == journal]['Q' + str(current_year)].values[0] if 'Q' + str(current_year) in jcr.columns and len(jcr[jcr['Revista'] == journal]['Q' + str(current_year)].values) > 0 else None for journal in prod.journal]
-    prod.email = prod.affiliations.apply(lambda x: [get_email(text) for text in x.split('; ') if '@' in text])
+    prod.corresponging_author_email = prod.affiliations.apply(lambda x: [get_email(text) for text in x.split('; ') if '@' in text])
 
 def get_email(text):
     email = re.findall(r'[\w\.-]+@[\w-]+[\.\w-]+[^\.]', text)
@@ -163,14 +154,14 @@ def create_authors_columns(pmids):
     names = [strip_accents(name).lower() for name in names_df.author_name.values] # full author names from VHIR
     name_cols = [name.replace(' ', '_') for name in names]
     names_df['author_col'] = name_cols
-    cols = ['pmid', 'corresponding_authors', 'authors_full_name_normalized', 'ciberesp', 'cibercv'] + name_cols
+    cols = ['pmid', 'corresponding_authors', 'authors_full_name_normalized', 'ciberesp', 'cibercv', 'first', 'last', 'corresponding'] + name_cols
     authors_df = pd.DataFrame(columns = cols)
     authors_df.pmid = pmids
     authors_df.ciberesp = 0
     authors_df.cibercv = 0
     authors_df.authors_full_name_normalized = prod.authors_full_name
     authors_df.authors_full_name_normalized = authors_df.authors_full_name_normalized.apply(lambda row: strip_accents(row).lower().split('; '))
-    authors_df.corresponding_authors = prod.email.apply(lambda row: corresponding_author(row) if len(row) > 0 else [])
+    authors_df.corresponding_authors = prod.corresponging_author_email.apply(lambda row: corresponding_author(row) if len(row) > 0 else [])
     for index , row in authors_df.iterrows():
         corresponding_authors = row.corresponding_authors
         for name, column in zip(names, name_cols):
@@ -179,9 +170,10 @@ def create_authors_columns(pmids):
             else:
                 result = fuzzy_match_author(name, row.authors_full_name_normalized) #VHIR author vs articles authors
                 authors_df.at[index, column] = result
-
+    authors_df.first = [1 if 'first' in any([row[name] for name in cols]) else 0 for _, row in authors_df.iterrows()]
+    authors_df.last = [1 if 'last' in any([row[name] for name in cols]) else 0 for _, row in authors_df.iterrows()]
+    authors_df.corresponding = [1 if 'corresponding' in any([row[name] for name in cols]) else 0 for _, row in authors_df.iterrows()]
     prod = prod.merge(authors_df, on='pmid') # merge authors columns with articles dataframe
-    prod.corresponding_authors = prod.corresponding_authors.apply(lambda row: 1 if len(row) > 0 else 0)
 
 def check_ciber():
     prod.ciberesp = prod.apply(lambda row: 1
@@ -191,7 +183,7 @@ def check_ciber():
                             if row.ciber == 1 and check_cibercv(row) == True
                             else 0, axis=1)
 
-@st.cache
+@st.cache_data
 def convert_df(df):
     output = BytesIO()
     writer = pd.ExcelWriter(output, engine='xlsxwriter')
@@ -205,7 +197,7 @@ def convert_df(df):
     return processed_data
 
 def save_results():
-    prod.drop(columns=['authors_full_name_normalized','authors_full_name','ciber', 'email'], inplace=True)
+    prod.drop(columns=['authors_full_name_normalized','authors_full_name','ciber','affiliations', 'corresponding_authors'], inplace=True)
     xlm = convert_df(prod)
     directory = './results'
     st.write('Resultados creados correctamente')
@@ -237,6 +229,7 @@ def create_dataframe(pmids_file, authors_file, jcr_file):
     create_authors_columns(pmids) 
 
     check_ciber()
+
 
     st.write('Autores identificados correctamente')
 
