@@ -188,7 +188,7 @@ def convert_df(df):
     df.to_excel(writer, index=False, sheet_name='registros')
     workbook = writer.book
     worksheet = writer.sheets['registros']
-    format1 = workbook.add_format({'num_format': '0.00'}) 
+    format1 = workbook.add_format({'num_format': '0'}) 
     worksheet.set_column('A:A', None, format1)  
     writer.close()
     processed_data = output.getvalue()
@@ -198,13 +198,14 @@ def save_results():
     prod.drop(columns=['authors_full_name_normalized','ciber', 'email'], inplace=True)
     xlm = convert_df(prod)
 
+    st.write('Resultados creados correctamente')
+
     st.download_button(
         label="Descargar resultados en Excel",
         data=xlm,
         file_name=f'results/registro_publicaciones_{today.day}-{today.month}-{today.year}.xlsx',
         mime='text/xlsx',
     )
-    st.write('Resultados guardados correctamente')
 
 
 def create_dataframe(pmids_file, authors_file, jcr_file):
