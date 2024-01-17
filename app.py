@@ -229,6 +229,8 @@ def create_dataframe(pmids_file, authors_file, jcr_file):
     df.pmids = df.apply(lambda row: int(row['pmids']), axis=1).unique()
     pmids = [int(pmid) for pmid in df.pmids.values]
 
+    st.write('PMIDS: ', pmids)
+    st.write('type: ', [(type(pmid), pmid) for pmid in pmids])
     extract_articles_from_pmids(pmids)
 
     create_dataframe_from_articles(pmids)
