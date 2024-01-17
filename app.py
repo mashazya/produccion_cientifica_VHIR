@@ -227,7 +227,7 @@ def create_dataframe(pmids_file, authors_file, jcr_file):
 
     df = df.dropna(subset=['pmids'])
     df.pmids = df.apply(lambda row: int(row['pmids']), axis=1).unique()
-    pmids = df.pmids.values
+    pmids = [int(pmid) for pmid in df.pmids.values]
 
     extract_articles_from_pmids(pmids)
 
