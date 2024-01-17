@@ -170,9 +170,9 @@ def create_authors_columns(pmids):
             else:
                 result = fuzzy_match_author(name, row.authors_full_name_normalized) #VHIR author vs articles authors
                 authors_df.at[index, column] = result
-    authors_df.first = [1 if 'first' in any([row[name] for name in cols]) else 0 for _, row in authors_df.iterrows()]
-    authors_df.last = [1 if 'last' in any([row[name] for name in cols]) else 0 for _, row in authors_df.iterrows()]
-    authors_df.corresponding = [1 if 'corresponding' in any([row[name] for name in cols]) else 0 for _, row in authors_df.iterrows()]
+    authors_df.first = [1 if any(['first' in row[name] for name in cols]) else 0 for _, row in authors_df.iterrows()]
+    authors_df.last = [1 if any(['last' in row[name] for name in cols]) else 0 for _, row in authors_df.iterrows()]
+    authors_df.corresponding = [1 if any(['corresponding' in row[name] for name in cols]) else 0 for _, row in authors_df.iterrows()]
     prod = prod.merge(authors_df, on='pmid') # merge authors columns with articles dataframe
 
 def check_ciber():
