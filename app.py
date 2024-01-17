@@ -154,7 +154,7 @@ def create_authors_columns(pmids):
     names = [strip_accents(name).lower() for name in names_df.author_name.values] # full author names from VHIR
     name_cols = [name.replace(' ', '_') for name in names]
     names_df['author_col'] = name_cols
-    cols = ['pmid', 'corresponding_authors', 'authors_full_name_normalized', 'ciberesp', 'cibercv', 'first', 'last', 'corresponding'] + name_cols
+    cols = ['pmid', 'corresponding_authors', 'authors_full_name_normalized', 'ciberesp', 'cibercv', 'any_first', 'any_last', 'any_corresponding'] + name_cols
     authors_df = pd.DataFrame(columns = cols)
     authors_df.pmid = pmids
     authors_df.ciberesp = 0
@@ -170,9 +170,9 @@ def create_authors_columns(pmids):
             else:
                 result = fuzzy_match_author(name, row.authors_full_name_normalized) #VHIR author vs articles authors
                 authors_df.at[index, column] = result
-    authors_df.first = [1 if any([row[name] == 'first' for name in name_cols]) else 0 for _, row in authors_df.iterrows()]
-    authors_df.last = [1 if any([row[name] == 'last' for name in name_cols]) else 0 for _, row in authors_df.iterrows()]
-    authors_df.corresponding = [1 if any([row[name] == 'corresponding' for name in name_cols]) else 0 for _, row in authors_df.iterrows()]
+    authors_df.any_first = [1 if any([row[name] == 'first' for name in name_cols]) else 0 for _, row in authors_df.iterrows()]
+    authors_df.any_last = [1 if any([row[name] == 'last' for name in name_cols]) else 0 for _, row in authors_df.iterrows()]
+    authors_df.any_corresponding = [1 if any([row[name] == 'corresponding' for name in name_cols]) else 0 for _, row in authors_df.iterrows()]
     prod = prod.merge(authors_df, on='pmid') # merge authors columns with articles dataframe
 
 def check_ciber():
