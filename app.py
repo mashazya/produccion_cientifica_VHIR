@@ -170,9 +170,9 @@ def create_authors_columns(pmids):
             else:
                 result = fuzzy_match_author(name, row.authors_full_name_normalized) #VHIR author vs articles authors
                 authors_df.at[index, column] = result
-    authors_df.first = [1 if any([row[name] == 'first' for name in cols]) else 0 for _, row in authors_df.iterrows()]
-    authors_df.last = [1 if any([row[name] == 'last' for name in cols]) else 0 for _, row in authors_df.iterrows()]
-    authors_df.corresponding = [1 if any([row[name] == 'corresponding' for name in cols]) else 0 for _, row in authors_df.iterrows()]
+    authors_df.first = [1 if any([row[name] == 'first' for name in name_cols]) else 0 for _, row in authors_df.iterrows()]
+    authors_df.last = [1 if any([row[name] == 'last' for name in name_cols]) else 0 for _, row in authors_df.iterrows()]
+    authors_df.corresponding = [1 if any([row[name] == 'corresponding' for name in name_cols]) else 0 for _, row in authors_df.iterrows()]
     prod = prod.merge(authors_df, on='pmid') # merge authors columns with articles dataframe
 
 def check_ciber():
@@ -197,7 +197,7 @@ def convert_df(df):
     return processed_data
 
 def save_results():
-    prod.drop(columns=['authors_full_name_normalized','authors_full_name','ciber','affiliations', 'corresponding_authors'], inplace=True)
+    prod.drop(columns=['authors_full_name_normalized','authors_full_name','ciber', 'corresponding_authors'], inplace=True)
     xlm = convert_df(prod)
     directory = './results'
     st.write('Resultados creados correctamente')
