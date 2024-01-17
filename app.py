@@ -88,6 +88,7 @@ def create_dataframe_from_articles(pmids):
     prod.journal = [articles[pmid].journal for pmid in pmids]
     prod.authors = ['; '.join([str(author['LastName'] + ' ' + author['Initials']) if 'ForeName' in author.keys() and 'Initials' in author.keys() else '' for author in author_list[pmid]]) for pmid in pmids]
     prod.authors_full_name = ['; '.join([str(author['LastName'] + ' ' + author['ForeName']) if 'ForeName' in author.keys() and 'LastName' in author.keys() else '' for author in author_list[pmid]]) for pmid in pmids]
+    st.write([(type(pmid), pmid)for pmid in pmids])
     affiliations = [[author['AffiliationInfo']['Affiliation'] if 'AffiliationInfo' in author.keys() else '' for author in author_list[pmid]] for pmid in pmids]
     affiliations = [list(filter(lambda x: x != '', affiliation)) for affiliation in affiliations]
     prod.affiliations = ['; '.join(affiliation) for affiliation in affiliations]
@@ -229,8 +230,6 @@ def create_dataframe(pmids_file, authors_file, jcr_file):
     df.pmids = df.apply(lambda row: int(row['pmids']), axis=1).unique()
     pmids = [int(pmid) for pmid in df.pmids.values]
 
-    st.write('PMIDS: ', pmids)
-    st.write('type: ', [(type(pmid), pmid) for pmid in pmids])
     extract_articles_from_pmids(pmids)
 
     create_dataframe_from_articles(pmids)
