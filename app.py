@@ -5,8 +5,9 @@ import unicodedata
 from fuzzywuzzy import fuzz
 import datetime
 import re
-from io import BytesIO
 import streamlit as st
+from io import BytesIO
+from pyxlsb import open_workbook as open_xlsb
 import time
 
 
@@ -189,7 +190,7 @@ def convert_df(df):
     worksheet = writer.sheets['registros']
     format1 = workbook.add_format({'num_format': '0.00'}) 
     worksheet.set_column('A:A', None, format1)  
-    writer.save()
+    writer.close()
     processed_data = output.getvalue()
     return processed_data
 
