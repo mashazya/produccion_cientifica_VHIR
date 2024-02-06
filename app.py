@@ -292,7 +292,6 @@ def login_to_website(username, password):
     options.add_argument("--disable-features=NetworkService")
     options.add_argument("--window-size=1920x1080")
     options.add_argument("--disable-features=VizDisplayCompositor")
-    return options
 
     service = Service(
         executable_path=get_chromedriver_path(),
