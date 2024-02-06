@@ -294,7 +294,7 @@ def login_to_website(username, password):
     options.add_argument("--disable-features=VizDisplayCompositor")
     return options
 
-     service = Service(
+    service = Service(
         executable_path=get_chromedriver_path(),
         log_output= os.path.join(os.getcwd(), 'selenium.log'),
     )
