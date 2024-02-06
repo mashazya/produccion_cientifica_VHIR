@@ -70,3 +70,4 @@ xlsxwriter==3.1.9
 selenium==4.17.2
 beautifulsoup4==4.12.2
 pyxlsb==1.0.10
+chromium==0.0.0
