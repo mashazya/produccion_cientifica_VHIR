@@ -12,6 +12,8 @@ import os
 import time
 
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 from urllib.parse import quote
 from selenium.webdriver.chrome.options import Options
@@ -285,7 +287,7 @@ def login_to_website(username, password):
     options.add_argument("--no-sandbox") # needed, because colab runs as root
 
 
-    driver = webdriver.Chrome(options=options)
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=options)
     driver.get(login_url)
 
     # Wait for the login page to load, you may need to adjust the sleep time
