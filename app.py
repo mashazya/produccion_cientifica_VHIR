@@ -282,6 +282,8 @@ def login_to_website(username, password):
     options = Options() 
     options.add_argument("--headless=new")
     options.add_argument('--disable-gpu')
+    options.add_argument("--no-sandbox") # needed, because colab runs as root
+
 
     driver = webdriver.Chrome(options=options)
     driver.get(login_url)
