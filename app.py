@@ -9,6 +9,13 @@ import streamlit as st
 from io import BytesIO
 from pyxlsb import open_workbook as open_xlsb
 import os
+import time
+
+from selenium import webdriver
+from bs4 import BeautifulSoup
+from urllib.parse import quote
+from selenium.webdriver.chrome.options import Options
+
 
 
 # ------------------ Global Variables ------------------ #
@@ -30,15 +37,24 @@ author_list = {}
 pubdate = {}
 epubdate = {}
 
-today = datetime.date.today()
-current_year = str(today.year)
-current_year = '2022' # CHANGE !!!!!!
+today = time.strftime("%d/%m/%Y")
+username = "milagros.mejia@vhir.org"
+password = "12424Car!"
 
 # ------------------ Functions ------------------ #
 fetch = PubMedFetcher()
 
+def intro():
+    st.image('https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Vhir_logo.svg/1200px-Vhir_logo.svg.png', width=200)
+    st.write("# Hola! 👋")
+    st.sidebar.success("Escoge qué quieres hacer")
+    st.markdown(
+        """
+        Esta aplicación permite extraer información de artículos científicos a partir de sus PMIDs y generar un registro de publicaciones y actualizar los valors de IF de un año concreto.
+    """
+    )
 def upload_clicked():
-    st.session_state.clicked = True
+    st.session_state.clicked = not st.session_state.clicked
 
 def extract_articles_from_pmids(pmids):
     progress_text = "Extrayendo informacion de artículos"
@@ -73,6 +89,7 @@ def extract_articles_from_pmids(pmids):
 
 
 def create_dataframe_from_articles(pmids):
+    global current_year
     prod.pmid = pmids
     prod.title = [articles[pmid].title for pmid in pmids]
     prod.day_when_published = [pubdate[pmid]['Day'] if 'Day' in pubdate[pmid].keys() else None for pmid in pmids]
@@ -149,7 +166,6 @@ def check_cibercv(row):
 
 def create_authors_columns(pmids):
     global prod
-    st.write('Identificando autores')
     names_df.email = names_df.email.apply(lambda row: row.replace(' ', '').split(',') if type(row) == str else [])
     names = [strip_accents(name).lower() for name in names_df.author_name.values] # full author names from VHIR
     name_cols = [name.replace(' ', '_') for name in names]
@@ -184,7 +200,7 @@ def check_ciber():
                             else 0, axis=1)
 
 @st.cache_data
-def convert_df(df):
+def convert_pub(df):
     output = BytesIO()
     writer = pd.ExcelWriter(output, engine='xlsxwriter')
     df.to_excel(writer, index=False, sheet_name='registros')
@@ -196,18 +212,47 @@ def convert_df(df):
     processed_data = output.getvalue()
     return processed_data
 
-def save_results():
+@st.cache_data
+def convert_if(if_df):
+    global if_year
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        if_df.to_excel(writer, sheet_name=f"IF {if_year}", index=False)
+        # data_frame2.to_excel(writer, sheet_name="Vegetables", index=False)
+        # data_frame3.to_excel(writer, sheet_name="Baked Items", index=False)
+    workbook = writer.book
+    worksheet = writer.sheets[f"IF {if_year}"]
+    format1 = workbook.add_format({'num_format': '0'}) 
+    worksheet.set_column('A:A', None, format1)  
+    writer.close()
+    processed_data = output.getvalue()
+    return processed_data
+
+def downloaded():
+    upload_clicked()
+
+def save_results_publications():
     prod.drop(columns=['authors_full_name_normalized','authors_full_name','ciber', 'corresponding_authors'], inplace=True)
-    xlm = convert_df(prod)
-    directory = './results'
+    xlm = convert_pub(prod)
     st.write('Resultados creados correctamente')
-    if not os.path.exists(directory):
-        os.makedirs(directory)
     st.download_button(
         label="Descargar resultados en Excel",
         data=xlm,
-        file_name=f'{directory}/registro_publicaciones_{today.day}-{today.month}-{today.year}.xlsx',
+        file_name=f'registro_publicaciones_{time.strftime("%d")}-{time.strftime("%m")}-{time.strftime("%Y")}.xlsx',
         mime='text/xlsx',
+        on_click = downloaded()
+    )
+
+def save_results_if(df):
+    global if_year
+    xlm = convert_if(df)
+    st.write('Resultados creados correctamente')
+    st.download_button(
+        label="Descargar resultados en Excel",
+        data= xlm,
+        file_name=f'Impact_Factor_{if_year}.xlsx',
+        mime='text/xlsx',
+        on_click = downloaded()
     )
 
 def create_dataframe(pmids_file, authors_file, jcr_file):
@@ -216,7 +261,6 @@ def create_dataframe(pmids_file, authors_file, jcr_file):
     df = pd.DataFrame(pd.read_excel(pmids_file))
     jcr = pd.DataFrame(pd.read_excel(jcr_file))
     names_df = pd.DataFrame(pd.read_excel(authors_file))
-
 
     df = df.dropna(subset=['pmids'])
     df.pmids = df.apply(lambda row: int(row['pmids']), axis=1).unique()
@@ -231,19 +275,142 @@ def create_dataframe(pmids_file, authors_file, jcr_file):
     check_ciber()
 
 
-    st.write('Autores identificados correctamente')
+def login_to_website(username, password):
+    base_url = "https://jcr.clarivate.com/jcr-jp/journal-profile"
+    login_url = f"{base_url}/login"  # Update with the actual login page URL
 
-if __name__ == "__main__":
-    uploaded_file_pmids = st.file_uploader("PMIDS")
-    uploaded_file_authors= st.file_uploader("NOMBRES DE LOS AUTORES")
-    uploaded_file_jcr= st.file_uploader("IMPACT FACTOR")
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")  # Run Chrome in headless mode
 
-    if 'clicked' not in st.session_state:
-        st.session_state.clicked = False
+    driver = webdriver.Chrome(options=chrome_options)  # You may need to download and configure the WebDriver for your browser
+    driver.get(login_url)
 
-    st.button('Extraer Información', on_click=upload_clicked)
+    # Wait for the login page to load, you may need to adjust the sleep time
+    time.sleep(5)
 
-    if st.session_state.clicked and uploaded_file_pmids is not None and uploaded_file_authors is not None and uploaded_file_jcr is not None:
-        st.write('Archivos cargados correctamente')
-        create_dataframe(uploaded_file_pmids,uploaded_file_authors,uploaded_file_jcr) 
-        save_results()
+    # Find the login form elements and enter credentials
+    username_input = driver.find_element("css selector", "input[name='email']")  # replace with the actual CSS selector of the username field
+    password_input = driver.find_element("css selector", "input[name='password']")  # replace with the actual CSS selector of the password field
+    login_button = driver.find_element("css selector", "button[type='submit']")  # replace with the actual CSS selector of the login button
+
+    username_input.send_keys(username)
+    password_input.send_keys(password)
+    login_button.click()
+
+    # Wait for the login to complete, you may need to adjust the sleep time
+    time.sleep(5)
+
+    return driver  # Return the driver with the authenticated session
+
+def get_impact_factor(driver, journal_name):
+    journal_name_encoded = quote(journal_name.upper())
+    # print(journal_name_encoded)
+    base_url = "https://jcr.clarivate.com/jcr-jp/journal-profile"
+    # Search for the journal name
+    search_url = f"{base_url}?journal={journal_name_encoded}&year=2022"
+    save_url = f"{base_url}?journal={journal_name_encoded}&year=All%20years"
+    # print(search_url)
+
+    # Use the existing driver (with authenticated session) to load the page
+    driver.get(search_url)
+
+    # Wait for the page to load, you may need to adjust the sleep time
+    time.sleep(5)
+
+    # Get the page source after JavaScript execution
+    page_source = driver.page_source
+
+    # Parse the HTML content
+    soup = BeautifulSoup(page_source, 'html.parser')
+
+    # Find the elements containing the impact factor and quantile
+    impact_factor_element = soup.find('div', class_='col-sm-5 col-md-5 col-lg-5 jif-values')
+    quantile_element = soup.find('tr', class_='tr-highlight ng-star-inserted')
+
+    if impact_factor_element and quantile_element:
+        impact_factor = impact_factor_element.find('p', class_='value').text.strip()
+        quantile = quantile_element.find('td', class_='rbj-quartile')
+        if not quantile:
+            quantile = quantile_element.find('td', class_='indicator-quartile')
+        quantile = quantile.text.strip()
+
+        save_url = search_url #if found correct year, else all years
+        return impact_factor, quantile
+    else:
+        return today, None
+    
+def run_scrapping(if_xlm):
+    global if_year
+    if_xlm = pd.read_excel(if_xlm, sheet_name=f'IF {if_year}')
+    link_xlm = pd.read_excel(if_xlm, sheet_name=f'LINK')
+    authenticated_driver = login_to_website(username, password)
+    if f'IF{if_year}' not in if_xlm.columns:
+        if_xlm[f'IF{if_year}'] = None
+        if_xlm[f'Q{if_year}'] = None
+    progress_text = "Buscando artículos...."
+    my_bar = st.progress(0, text=progress_text)
+    percent_complete = 0
+    for idx, row in if_xlm.iterrows():
+        my_bar.progress(percent_complete, text=progress_text)
+        if pd.isna(row[f'IF{if_year}']):
+            impact_factor, quantile = get_impact_factor(authenticated_driver, row.Revista)
+            if_xlm.at[idx, 'IF{if_year}'] = impact_factor
+            if_xlm.at[idx, 'Q{if_year}'] = quantile
+        percent_complete = int((idx+1)*100/len(if_xlm))
+    my_bar.progress(100, text=progress_text)
+    my_bar.empty()
+    return if_xlm
+
+def registro_publicaciones ():
+    st.write("# Generar Registro de Publicaciones")
+    global current_year
+    current_year = st.selectbox(
+        "Cual es el año de IF actual?",
+        ("2022", "2021", "2020"),
+        index=None,
+        placeholder="Escoge un año",
+    )
+    if current_year:
+        uploaded_file_pmids = st.file_uploader("PMIDS")
+        uploaded_file_authors= st.file_uploader("NOMBRES DE LOS AUTORES")
+        uploaded_file_jcr= st.file_uploader("IMPACT FACTOR")
+
+        if 'clicked' not in st.session_state:
+            st.session_state.clicked = False
+
+        st.button('Extraer Información', on_click=upload_clicked)
+
+        if st.session_state.clicked and uploaded_file_pmids is not None and uploaded_file_authors is not None and uploaded_file_jcr is not None:
+            st.write('Archivos cargados correctamente')
+            create_dataframe(uploaded_file_pmids,uploaded_file_authors,uploaded_file_jcr) 
+            save_results_publications()
+
+def actualizar_if():
+    st.write("# Actualizar Impact Factor")
+    global if_year
+    if_year = st.selectbox(
+        "Cual es el año que quieres añadir?",
+        ("2023","2022", "2021", "2020"),
+        index=None,
+        placeholder="Escoge un año",
+    )
+    if  if_year:
+        uploaded_file_if = st.file_uploader("IMPACT FACTOR")
+        if uploaded_file_if:
+            if 'clicked' not in st.session_state:
+                st.session_state.clicked = False
+            st.button('Actualizar', on_click=upload_clicked)
+            if st.session_state.clicked:
+                st.write('Archivo cargado correctamente')
+                new_if = run_scrapping(uploaded_file_if) 
+                save_results_if(new_if)
+
+
+page_names_to_funcs = {
+    "Inicio": intro,
+    "Actualizar Impact Factor": actualizar_if,
+    "Generar Registro de Publicaciones": registro_publicaciones
+}
+
+demo_name = st.sidebar.selectbox("Choose a demo", page_names_to_funcs.keys())
+page_names_to_funcs[demo_name]()
