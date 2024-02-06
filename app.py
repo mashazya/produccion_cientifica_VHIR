@@ -283,7 +283,7 @@ def login_to_website(username, password):
     base_url = "https://jcr.clarivate.com/jcr-jp/journal-profile"
     login_url = f"{base_url}/login"  # Update with the actual login page URL
   
-   options = Options() 
+    options = Options() 
     options.add_argument("--headless")
     options.add_argument('--disable-gpu')
     options.add_argument("--no-sandbox")
