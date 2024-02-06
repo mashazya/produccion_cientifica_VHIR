@@ -286,8 +286,7 @@ def login_to_website(username, password):
     options.add_argument('--disable-gpu')
     options.add_argument("--no-sandbox") # needed, because colab runs as root
 
-    driver_path = ChromeDriverManager().install()
-    driver = webdriver.Chrome(executable_path=driver_path,  options=options)
+    driver = webdriver.Chrome(ChromeDriverManager().install(),  options=options)
     driver.get(login_url)
 
     # Wait for the login page to load, you may need to adjust the sleep time
