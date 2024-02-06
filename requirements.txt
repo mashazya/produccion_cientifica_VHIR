@@ -166,3 +166,5 @@ wos==0.2.7
 wsproto==1.2.0
 XlsxWriter==3.1.9
 xmltodict==0.13.0
+threadpoolctl
+sktime >= 0.19.2
