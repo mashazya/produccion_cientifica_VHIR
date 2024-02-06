@@ -293,7 +293,9 @@ def login_to_website(username, password):
     service = Service(chrome_driver_path)
     
     # Initialize WebDriver with the provided options and service
-    driver = webdriver.Chrome(service=service, options=options)
+    driver = webdriver.Chrome(executable_path=ChromeDriverManager(version='94.0.4606.61').install())
+
+    #driver = webdriver.Chrome(service=service, options=options)
     driver.get(login_url)
   
     # Wait for the login page to load, you may need to adjust the sleep time
