@@ -276,17 +276,29 @@ def create_dataframe(pmids_file, authors_file, jcr_file):
 
     check_ciber()
 
+@st.cache_resource(show_spinner=False)
+def get_chromedriver_path():
+    return shutil.which('chromedriver')
 
 def login_to_website(username, password):
     base_url = "https://jcr.clarivate.com/jcr-jp/journal-profile"
     login_url = f"{base_url}/login"  # Update with the actual login page URL
 
     options = Options() 
-    options.add_argument("--headless=new")
-    options.add_argument('--disable-gpu')
-    options.add_argument("--no-sandbox") # needed, because colab runs as root
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--disable-features=NetworkService")
+    options.add_argument("--window-size=1920x1080")
+    options.add_argument("--disable-features=VizDisplayCompositor")
+    return options
 
-    driver = webdriver.Chrome(ChromeDriverManager().install(),  options=options)
+     service = Service(
+        executable_path=get_chromedriver_path(),
+        log_output= os.path.join(os.getcwd(), 'selenium.log'),
+    )
+    driver = webdriver.Chrome(ChromeDriverManager().install(),  options=options,service=service))
     driver.get(login_url)
 
     # Wait for the login page to load, you may need to adjust the sleep time
