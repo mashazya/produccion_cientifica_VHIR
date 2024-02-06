@@ -284,10 +284,7 @@ def login_to_website(username, password):
     login_url = f"{base_url}/login"  # Update with the actual login page URL
   
     options = Options()
-
     options.add_argument("--headless")  # Use "--headless" instead of "--headless=new"
-    options.add_argument('--disable-gpu')
-    options.add_argument("--no-sandbox")  # Needed because Colab runs as root
 
     # Use Service class to set the executable path for ChromeDriver
     service = Service(ChromeDriverManager().install())
