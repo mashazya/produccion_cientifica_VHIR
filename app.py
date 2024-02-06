@@ -287,7 +287,7 @@ def login_to_website(username, password):
     options.add_argument("--headless")  # Use "--headless" instead of "--headless=new"
 
     # Use Service class to set the executable path for ChromeDriver
-    service = Service(ChromeDriverManager(chrome_type='google').install())
+    service = Service(ChromeDriverManager(chrome_type='google-chrome').install())
     
     # Initialize WebDriver with the provided options and service
     driver = webdriver.Chrome(service=service, options=options)
