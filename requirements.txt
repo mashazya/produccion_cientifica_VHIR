@@ -67,3 +67,6 @@ virtualenv==20.25.0
 wheel==0.42.0
 xmltodict==0.13.0
 xlsxwriter==3.1.9
+selenium==4.17.2
+beautifulsoup4==4.12.2
+pyxlsb==1.0.10
