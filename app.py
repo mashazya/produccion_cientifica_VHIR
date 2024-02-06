@@ -291,7 +291,7 @@ def login_to_website(username, password):
     options.add_argument("--no-sandbox") # needed, because colab runs as root
 
 
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=options)
+    driver = webdriver.Chrome(options=options)
     driver.get(login_url)
     # Wait for the login page to load, you may need to adjust the sleep time
     time.sleep(5)
