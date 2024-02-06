@@ -286,21 +286,13 @@ def login_to_website(username, password):
     login_url = f"{base_url}/login"  # Update with the actual login page URL
 
     options = Options() 
-    options.add_argument("--headless")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--disable-gpu")
-    options.add_argument("--disable-features=NetworkService")
-    options.add_argument("--window-size=1920x1080")
-    options.add_argument("--disable-features=VizDisplayCompositor")
+    options.add_argument("--headless=new")
+    options.add_argument('--disable-gpu')
+    options.add_argument("--no-sandbox") # needed, because colab runs as root
 
-    service = Service(
-        executable_path=get_chromedriver_path(),
-        log_output= os.path.join(os.getcwd(), 'selenium.log'),
-    )
-    driver = webdriver.Chrome(ChromeDriverManager().install(),  options=options, service=service)
+
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=options)
     driver.get(login_url)
-
     # Wait for the login page to load, you may need to adjust the sleep time
     time.sleep(5)
 
