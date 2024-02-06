@@ -278,20 +278,15 @@ def create_dataframe(pmids_file, authors_file, jcr_file):
     check_ciber()
 
 @st.cache_resource(show_spinner=False)
-def get_chromedriver_path():
-    return shutil.which('chromedriver')
 
 def login_to_website(username, password):
     base_url = "https://jcr.clarivate.com/jcr-jp/journal-profile"
     login_url = f"{base_url}/login"  # Update with the actual login page URL
+  
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")  # Run Chrome in headless mode
 
-    options = Options() 
-    options.add_argument("--headless=new")
-    options.add_argument('--disable-gpu')
-    options.add_argument("--no-sandbox") # needed, because colab runs as root
-
-
-    driver = webdriver.Chrome(options=options)
+    driver = webdriver.Chrome(options=chrome_options)  # You may need to download and configure the WebDriver for your browser
     driver.get(login_url)
     # Wait for the login page to load, you may need to adjust the sleep time
     time.sleep(5)
