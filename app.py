@@ -285,6 +285,8 @@ def login_to_website(username, password):
   
     options = Options()
     options.add_argument("--headless")  # Use "--headless" instead of "--headless=new"
+    options.add_argument("--no-sandbox") # needed, because colab runs as root
+
 
     # Use Service class to set the executable path for ChromeDriver
     chrome_driver_path = ChromeDriverManager(chrome_type='google').install()
