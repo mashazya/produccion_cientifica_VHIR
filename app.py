@@ -367,7 +367,7 @@ def run_scrapping(if_xlm):
     for idx, row in if_xlm.iterrows():
         my_bar.progress(percent_complete, text=progress_text)
         if percent_complete%10 == 0:
-          print(percent_complete)
+          st.write(percent_complete)
         if pd.isna(row[f'IF{if_year}']):
             impact_factor, quantile = get_impact_factor(authenticated_driver, row.Revista)
             if_xlm.at[idx, 'IF{if_year}'] = impact_factor
