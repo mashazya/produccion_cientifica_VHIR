@@ -301,7 +301,7 @@ def login_to_website(username, password):
     driver.get(login_url)
   
     # Wait for the login page to load, you may need to adjust the sleep time
-    time.sleep(5)
+    time.sleep(10)
     # Find the login form elements and enter credentials
     username_input = driver.find_element("css selector", "input[name='email']")  # replace with the actual CSS selector of the username field
     password_input = driver.find_element("css selector", "input[name='password']")  # replace with the actual CSS selector of the password field
@@ -312,7 +312,7 @@ def login_to_website(username, password):
     login_button.click()
 
     # Wait for the login to complete, you may need to adjust the sleep time
-    time.sleep(5)
+    time.sleep(10)
 
     return driver  # Return the driver with the authenticated session
 
