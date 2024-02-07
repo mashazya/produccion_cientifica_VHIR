@@ -366,12 +366,16 @@ def run_scrapping(if_xlm):
     percent_complete = 0
     for idx, row in if_xlm.iterrows():
         my_bar.progress(percent_complete, text=progress_text)
-        if percent_complete%10 == 0:
-          st.write(percent_complete)
         if pd.isna(row[f'IF{if_year}']):
             impact_factor, quantile = get_impact_factor(authenticated_driver, row.Revista)
-            if_xlm.at[idx, 'IF{if_year}'] = impact_factor
-            if_xlm.at[idx, 'Q{if_year}'] = quantile
+            
+            colif = 'IF{}'.format(str(if_year))
+            colq = 'Q{}'.format(str(if_year))
+            if_xlm.at[idx, colif] = impact_factor
+            if_xlm.at[idx, colq] = quantile
+
+            st.write(impact_factor, quantile)
+            st.write(if_xlm.at[idx, colif],if_xlm.at[idx, colq])
         percent_complete = int((idx+1)*100/len(if_xlm))
     my_bar.progress(100, text=progress_text)
     my_bar.empty()
