@@ -289,10 +289,9 @@ def login_to_website(username, password):
     options.add_argument("--no-sandbox")
     
     # Specify the desired version of Chrome
-    desired_chrome_version = "94.0.4606.61"  # Example version number
     
     # Initialize ChromeDriverManager with the desired version
-    chrome_driver_path = ChromeDriverManager(chrome_type='google', chrome_version=desired_chrome_version).install()
+    chrome_driver_path = ChromeDriverManagerChromeDriverManager(chrome_type='google').install()
     
     # Initialize the service with the path to ChromeDriver executable
     service = Service(chrome_driver_path)
