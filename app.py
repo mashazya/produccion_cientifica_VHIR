@@ -287,11 +287,10 @@ def login_to_website(username, password):
     options.add_argument("--headless")
     options.add_argument('--disable-gpu')
     options.add_argument("--no-sandbox")
-    
-    # Specify the desired version of Chrome
+  
     
     # Initialize ChromeDriverManager with the desired version
-    chrome_driver_path = ChromeDriverManagerChromeDriverManager(chrome_type='google').install()
+    chrome_driver_path = ChromeDriverManager(chrome_type='google').install()
     
     # Initialize the service with the path to ChromeDriver executable
     service = Service(chrome_driver_path)
