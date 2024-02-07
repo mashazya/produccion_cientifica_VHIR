@@ -285,10 +285,9 @@ def login_to_website(username, password):
   
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument('--no-sandbox')
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--disable-gpu")
-    chrome_options.add_argument("--window-size=1920,1080")
-    browser = webdriver.Chrome(options= chrome_options)
+    #chrome_options.add_argument("--headless")
+    #chrome_options.add_argument("--disable-gpu")
+    #chrome_options.add_argument("--window-size=1920,1080")
     
     # Initialize ChromeDriverManager with the desired version
     #chrome_driver_path = ChromeDriverManager(chrome_type='google').install()
@@ -301,7 +300,7 @@ def login_to_website(username, password):
     driver.get(login_url)
   
     # Wait for the login page to load, you may need to adjust the sleep time
-    time.sleep(10)
+    time.sleep(5)
     # Find the login form elements and enter credentials
     username_input = driver.find_element("css selector", "input[name='email']")  # replace with the actual CSS selector of the username field
     password_input = driver.find_element("css selector", "input[name='password']")  # replace with the actual CSS selector of the password field
@@ -312,7 +311,7 @@ def login_to_website(username, password):
     login_button.click()
 
     # Wait for the login to complete, you may need to adjust the sleep time
-    time.sleep(10)
+    time.sleep(5)
 
     return driver  # Return the driver with the authenticated session
 
