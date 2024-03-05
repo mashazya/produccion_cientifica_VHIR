@@ -261,7 +261,7 @@ def save_results_if(df):
 def create_dataframe(pmids_file, authors_file, jcr_file):
 # READ FILES
     global jcr, names_df
-    df = pd.DataFrame(pd.read_excel(pmids_file))
+    df = pd.DataFrame(pd.read_excel(pmids_file),header=None)
     jcr = pd.DataFrame(pd.read_excel(jcr_file))
     names_df = pd.DataFrame(pd.read_excel(authors_file))
   
