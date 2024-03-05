@@ -69,7 +69,7 @@ def extract_articles_from_pmids(pmids):
         #extract articles
         try:
             articles[pmid] = fetch.article_by_pmid(pmid)
-            timer_duration = 30  # 30 seconds
+            timer_duration = 20  # 20 seconds
             start_time = time.time()
             timer_expired = False  # Flag to indicate if timer has expired
 
@@ -106,7 +106,6 @@ def extract_articles_from_pmids(pmids):
     my_bar.progress(100, text=progress_text)
     my_bar.empty()
     return valid_pmids
-    st.write('Artículos extraidos correctamente')
 
 
 def create_dataframe_from_articles(pmids):
@@ -285,7 +284,7 @@ def create_dataframe(pmids_file, authors_file, jcr_file):
 
     #check if the first column contains data or not
     df.columns = ['pmids']
-    if type(df.pmids.iloc[0]) != int:
+    if str(df.pmids.iloc[0]).lower() == 'pmids':
         df.drop(df.index[0], inplace=True)
 
     #convert to int and drop duplicates of pmids
@@ -294,6 +293,7 @@ def create_dataframe(pmids_file, authors_file, jcr_file):
     pmids = [int(pmid) for pmid in df.pmids.values]
 
     valid_pmids = extract_articles_from_pmids(pmids)
+    valid_pmids = list(set(valid_pmids))
 
     create_dataframe_from_articles(valid_pmids)
 
