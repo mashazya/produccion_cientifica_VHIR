@@ -69,7 +69,7 @@ def extract_articles_from_pmids(pmids):
         #extract articles
         try:
             articles[pmid] = fetch.article_by_pmid(pmid)
-            timer_duration = 20  # 20 seconds
+            timer_duration = 30  # 30 seconds
             start_time = time.time()
             timer_expired = False  # Flag to indicate if timer has expired
 
