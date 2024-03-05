@@ -61,6 +61,7 @@ def upload_clicked():
 
 def extract_articles_from_pmids(pmids):
     progress_text = "Extrayendo informacion de artículos"
+    valid_pmids = []
     my_bar = st.progress(0, text=progress_text)
     percent_complete = 0
     for i, pmid in enumerate(pmids):
@@ -68,6 +69,10 @@ def extract_articles_from_pmids(pmids):
         #extract articles
         try:
             articles[pmid] = fetch.article_by_pmid(pmid)
+            timer_duration = 10  # 10 seconds
+            start_time = time.time()
+            timer_expired = False  # Flag to indicate if timer has expired
+
         except:
             while True:
                 try:
@@ -75,7 +80,19 @@ def extract_articles_from_pmids(pmids):
                     break
                 except:
                     print("fetching ", pmid, end='\r')
+                      # Check if the timer has expired
+                    elapsed_time = time.time() - start_time
+                    if elapsed_time >= timer_duration:
+                        print("expired!")
+                        st.write(f'Error al extraer el artículo con pmid {pmid}, por favor comprueba que el pmid es correcto')
+                        timer_expired = True
+                        break
+        if timer_expired:
+            # Timer expired continue to the next pmid
+            continue
+
         #process extracted articles
+        valid_pmids.append(pmid)
         articles_xml[pmid] = xmltodict.parse(articles[pmid].xml)
         authors =  articles_xml[pmid]['PubmedArticleSet']['PubmedArticle']['MedlineCitation']['Article'][ 'AuthorList']['Author']
         pubdate[pmid] = articles_xml[pmid]['PubmedArticleSet']['PubmedArticle']['MedlineCitation']['Article']['Journal']['JournalIssue']['PubDate']
@@ -88,6 +105,7 @@ def extract_articles_from_pmids(pmids):
         percent_complete = int((i+1)*100/len(pmids))
     my_bar.progress(100, text=progress_text)
     my_bar.empty()
+    return valid_pmids
     st.write('Artículos extraidos correctamente')
 
 
@@ -275,11 +293,11 @@ def create_dataframe(pmids_file, authors_file, jcr_file):
     df.pmids = df.apply(lambda row: int(row['pmids']), axis=1)
     pmids = [int(pmid) for pmid in df.pmids.values]
 
-    extract_articles_from_pmids(pmids)
+    valid_pmids = extract_articles_from_pmids(pmids)
 
-    create_dataframe_from_articles(pmids)
+    create_dataframe_from_articles(valid_pmids)
 
-    create_authors_columns(pmids) 
+    create_authors_columns(valid_pmids) 
 
     check_ciber()
 
