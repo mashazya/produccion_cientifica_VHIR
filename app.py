@@ -265,8 +265,9 @@ def create_dataframe(pmids_file, authors_file, jcr_file):
     jcr = pd.DataFrame(pd.read_excel(jcr_file))
     names_df = pd.DataFrame(pd.read_excel(authors_file))
   
-    if df.columns[0] != 'pmids':
-        df = pd.DataFrame(pd.read_excel(pmids_file, header=False), columns=['pmids'])
+    df.columns = ['pmids']
+    if type(df.pmids.iloc[0]) != int:
+        df.drop(df.index[0], inplace=True)
       
     st.write(df)
     st.write(jcr)
