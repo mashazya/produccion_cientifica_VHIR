@@ -264,15 +264,13 @@ def create_dataframe(pmids_file, authors_file, jcr_file):
     df = pd.read_excel(pmids_file, header = None)
     jcr = pd.DataFrame(pd.read_excel(jcr_file))
     names_df = pd.DataFrame(pd.read_excel(authors_file))
-  
+
+    #check if the first column contains data or not
     df.columns = ['pmids']
     if type(df.pmids.iloc[0]) != int:
         df.drop(df.index[0], inplace=True)
-      
-    st.write(df)
-    st.write(jcr)
-    st.write(names_df)
-  
+
+    #convert to int and drop duplicates of pmids
     df = df.dropna(subset=['pmids']).drop_duplicates()
     df.pmids = df.apply(lambda row: int(row['pmids']), axis=1)
     pmids = [int(pmid) for pmid in df.pmids.values]
