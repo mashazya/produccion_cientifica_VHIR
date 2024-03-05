@@ -273,7 +273,7 @@ def create_dataframe(pmids_file, authors_file, jcr_file):
     st.write(jcr)
     st.write(names_df)
   
-    df = df.dropna(subset=['pmids']).unique()
+    df = df.dropna(subset=['pmids']).drop_duplicates()
     df.pmids = df.apply(lambda row: int(row['pmids']), axis=1)
     pmids = [int(pmid) for pmid in df.pmids.values]
 
