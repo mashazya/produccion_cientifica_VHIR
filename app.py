@@ -66,12 +66,12 @@ def extract_articles_from_pmids(pmids):
     percent_complete = 0
     for i, pmid in enumerate(pmids):
         my_bar.progress(percent_complete, text=progress_text)
+        start_time = time.time()
+        timer_expired = False  # Flag to indicate if timer has expired
         #extract articles
         try:
             articles[pmid] = fetch.article_by_pmid(pmid)
             timer_duration = 40  # 40 seconds
-            start_time = time.time()
-            timer_expired = False  # Flag to indicate if timer has expired
 
         except:
             while True:
