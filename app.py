@@ -340,12 +340,12 @@ def login_to_website(username, password):
 
     return driver  # Return the driver with the authenticated session
 
-def get_impact_factor(driver, journal_name):
+def get_impact_factor(driver, journal_name,if_year):
     journal_name_encoded = journal_name.upper()
     # print(journal_name_encoded)
     base_url = "https://jcr.clarivate.com/jcr-jp/journal-profile"
     # Search for the journal name
-    search_url = f"{base_url}?journal={journal_name_encoded}&year=2022"
+    search_url = f"{base_url}?journal={journal_name_encoded}&year={if_year}"
     save_url = f"{base_url}?journal={journal_name_encoded}&year=All%20years"
 
     # Use the existing driver (with authenticated session) to load the page
@@ -390,7 +390,7 @@ def run_scrapping(if_xlm):
     for idx, row in if_xlm.iterrows():
         my_bar.progress(percent_complete, text=progress_text)
         if pd.isna(row[f'IF{if_year}']):
-            impact_factor, quantile = get_impact_factor(authenticated_driver, row.Revista)
+            impact_factor, quantile = get_impact_factor(authenticated_driver, row.Revista,if_year)
             
             colif = 'IF{}'.format(str(if_year))
             colq = 'Q{}'.format(str(if_year))
@@ -406,7 +406,7 @@ def registro_publicaciones ():
     global current_year
     current_year = st.selectbox(
         "Cual es el año de IF actual?",
-        ("2022", "2021", "2020"),
+        ("2030","2029","2028","2027","2026","2025","2024","2023","2022", "2021", "2020"),
         index=None,
         placeholder="Escoge un año",
     )
@@ -430,7 +430,7 @@ def actualizar_if():
     global if_year
     if_year = st.selectbox(
         "Cual es el año que quieres añadir?",
-        ("2023","2022", "2021", "2020"),
+        ("2030","2029","2028","2027","2026","2025","2024","2023","2022", "2021", "2020"),
         index=None,
         placeholder="Escoge un año",
     )
