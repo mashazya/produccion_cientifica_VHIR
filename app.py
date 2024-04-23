@@ -341,7 +341,7 @@ def login_to_website(username, password):
     return driver  # Return the driver with the authenticated session
 
 def get_impact_factor(driver, journal_name):
-    journal_name_encoded = quote(journal_name.upper())
+    journal_name_encoded = journal_name.upper()
     # print(journal_name_encoded)
     base_url = "https://jcr.clarivate.com/jcr-jp/journal-profile"
     # Search for the journal name
