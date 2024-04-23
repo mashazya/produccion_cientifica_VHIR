@@ -347,7 +347,7 @@ def get_impact_factor(driver, journal_name):
     # Search for the journal name
     search_url = f"{base_url}?journal={journal_name_encoded}&year=2022"
     save_url = f"{base_url}?journal={journal_name_encoded}&year=All%20years"
-    # print(search_url)
+    st.write(search_url)
 
     # Use the existing driver (with authenticated session) to load the page
     driver.get(search_url)
