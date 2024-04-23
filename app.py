@@ -284,7 +284,7 @@ def create_dataframe(pmids_file, authors_file, jcr_file):
 
     #check if the first column contains data or not
     df.columns = ['pmids']
-    if str(df.pmids.iloc[0]).lower() == 'pmids':
+    if not str(df.pmids.iloc[0]).lower().isdigit():
         df.drop(df.index[0], inplace=True)
 
     #convert to int and drop duplicates of pmids
