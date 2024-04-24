@@ -382,8 +382,8 @@ def run_scrapping(if_xlm):
     # link_xlm = pd.read_excel(if_xlm, sheet_name=f'LINK')
     authenticated_driver = login_to_website(username, password)
     if f'IF{if_year}' not in if_xlm.columns:
-        if_xlm[f'IF{if_year}'] = None
-        if_xlm[f'Q{if_year}'] = None
+        if_xlm[f'IF{if_year}'] = []
+        if_xlm[f'Q{if_year}'] = []
     progress_text = "Buscando artículos...."
     my_bar = st.progress(0, text=progress_text)
     percent_complete = 0
@@ -394,17 +394,9 @@ def run_scrapping(if_xlm):
             
             colif = 'IF{}'.format(str(if_year))
             colq = 'Q{}'.format(str(if_year))
-
-            st.write(impact_factor, colif, colq, idx)
-            if impact_factor is not None:
-                if_xlm.loc[idx, colif] = impact_factor
-            else:
-                if_xlm.loc[idx, colif] = None
-            
-            if quantile is not None:
-                if_xlm.loc[idx, colq] = quantile
-            else:
-                if_xlm.loc[idx, colq] = None
+          
+            if_xlm.loc[idx, colif] = impact_factor
+            if_xlm.loc[idx, colq] = quantile
 
         percent_complete = int((idx+1)*100/len(if_xlm))
     my_bar.progress(100, text=progress_text)
