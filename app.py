@@ -383,9 +383,9 @@ def run_scrapping(if_xlm):
     authenticated_driver = login_to_website(username, password)
     if f'IF{if_year}' not in if_xlm.columns:
         if f'IF{if_year}' not in if_xlm.columns:
-          if_xlm[f'IF{if_year}'] = pd.NA for pandas >=1.0.0
+          if_xlm[f'IF{if_year}'] = pd.NA
         if f'Q{if_year}' not in if_xlm.columns:
-            if_xlm[f'Q{if_year}'] = pd.NA for pandas >=1.0.0
+            if_xlm[f'Q{if_year}'] = pd.NA
         if_xlm[f'IF{if_year}'] = if_xlm[f'IF{if_year}'].astype('object')
         if_xlm[f'Q{if_year}'] = if_xlm[f'Q{if_year}'].astype('object')
     progress_text = "Buscando artículos...."
