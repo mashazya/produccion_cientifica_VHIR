@@ -394,7 +394,8 @@ def run_scrapping(if_xlm):
             
             colif = 'IF{}'.format(str(if_year))
             colq = 'Q{}'.format(str(if_year))
-            
+
+            print(impact_factor, colif, colq, idx)
             if impact_factor is not None:
                 if_xlm.loc[idx, colif] = impact_factor
             else:
