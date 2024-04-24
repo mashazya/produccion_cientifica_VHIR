@@ -384,6 +384,8 @@ def run_scrapping(if_xlm):
     if f'IF{if_year}' not in if_xlm.columns:
         if_xlm[f'IF{if_year}'] = []
         if_xlm[f'Q{if_year}'] = []
+        if_xlm[f'IF{if_year}'].astype(str)
+        if_xlm[f'Q{if_year}'].astype(str)
     progress_text = "Buscando artículos...."
     my_bar = st.progress(0, text=progress_text)
     percent_complete = 0
@@ -395,8 +397,8 @@ def run_scrapping(if_xlm):
             colif = 'IF{}'.format(str(if_year))
             colq = 'Q{}'.format(str(if_year))
           
-            if_xlm.loc[idx, colif] = impact_factor
-            if_xlm.loc[idx, colq] = quantile
+            if_xlm.loc[idx, colif] = str(impact_factor)
+            if_xlm.loc[idx, colq] = str(quantile)
 
         percent_complete = int((idx+1)*100/len(if_xlm))
     my_bar.progress(100, text=progress_text)
