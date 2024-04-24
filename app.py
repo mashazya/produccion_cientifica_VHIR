@@ -396,14 +396,14 @@ def run_scrapping(if_xlm):
             colq = 'Q{}'.format(str(if_year))
             
             if impact_factor is not None:
-                if_xlm.at[idx, colif] = impact_factor
+                if_xlm.loc[idx, colif] = impact_factor
             else:
-                if_xlm.at[idx, colif] = None
+                if_xlm.loc[idx, colif] = None
             
             if quantile is not None:
-                if_xlm.at[idx, colq] = quantile
+                if_xlm.loc[idx, colq] = quantile
             else:
-                if_xlm.at[idx, colq] = None
+                if_xlm.loc[idx, colq] = None
 
         percent_complete = int((idx+1)*100/len(if_xlm))
     my_bar.progress(100, text=progress_text)
