@@ -434,7 +434,7 @@ def registro_publicaciones ():
             save_results_publications()
 
 def registro_publicaciones_sin_if():
-    st.write("# Generar Registro de Publicaciones sin información del IF")
+    st.write("# Generar Registro de Publicaciones")
     global current_year
     current_year = st.selectbox(
         "Cual es el año de IF actual?",
@@ -481,7 +481,7 @@ page_names_to_funcs = {
     "Inicio": intro,
     "Actualizar Impact Factor": actualizar_if,
     "Generar Registro de Publicaciones": registro_publicaciones,
-    "Generar Registro de Publicaciones sin IF": registro_publicaciones_sin_if
+    "Generar Registro de Publicaciones": registro_publicaciones_sin_if
 }
 
 demo_name = st.sidebar.selectbox("Choose a demo", page_names_to_funcs.keys())
