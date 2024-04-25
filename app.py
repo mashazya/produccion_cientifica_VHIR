@@ -20,12 +20,6 @@ from urllib.parse import quote
 from selenium.webdriver.chrome.options import Options
 import urllib3
 
-# Increase the connection pool size to 3
-http = urllib3.PoolManager(maxsize=3)
-
-
-
-
 
 # ------------------ Global Variables ------------------ #
 
@@ -347,6 +341,7 @@ def login_to_website(username, password):
     return driver  # Return the driver with the authenticated session
 
 def get_impact_factor(driver, journal_name,if_year):
+    http = urllib3.PoolManager(maxsize=10)  # Set maxsize to the desired value
     journal_name_encoded = journal_name.upper()
     # print(journal_name_encoded)
     base_url = "https://jcr.clarivate.com/jcr-jp/journal-profile"
