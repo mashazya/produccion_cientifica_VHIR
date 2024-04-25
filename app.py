@@ -319,7 +319,11 @@ def login_to_website(username, password):
     
     # Initialize the service with the path to ChromeDriver executable
     #service = Service(chrome_driver_path)
-    
+
+    session = requests.Session()
+    session.mount('http://', requests.adapters.HTTPAdapter(pool_connections=10, pool_maxsize=10))
+    session.mount('https://', requests.adapters.HTTPAdapter(pool_connections=10, pool_maxsize=10))
+  
     # Initialize WebDriver with the provided options and service
     driver = webdriver.Chrome(options=chrome_options)#,service=service, )
     driver.get(login_url)
@@ -336,7 +340,7 @@ def login_to_website(username, password):
     login_button.click()
 
     # Wait for the login to complete, you may need to adjust the sleep time
-    time.sleep(5)
+    time.sleep(10)
 
     return driver  # Return the driver with the authenticated session
 
