@@ -18,6 +18,12 @@ from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 from urllib.parse import quote
 from selenium.webdriver.chrome.options import Options
+import urllib3
+
+# Increase the connection pool size to 3
+http = urllib3.PoolManager(maxsize=3)
+
+
 
 
 
