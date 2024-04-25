@@ -19,7 +19,6 @@ from bs4 import BeautifulSoup
 from urllib.parse import quote
 from selenium.webdriver.chrome.options import Options
 import urllib3
-import requests
 
 
 # ------------------ Global Variables ------------------ #
@@ -72,7 +71,7 @@ def extract_articles_from_pmids(pmids):
         #extract articles
         try:
             articles[pmid] = fetch.article_by_pmid(pmid)
-            timer_duration = 50  # 50 seconds
+            timer_duration = 40  # 40 seconds
 
         except:
             while True:
@@ -135,10 +134,11 @@ def create_dataframe_from_articles(pmids):
     epub = [list(date) for date in zip(epub_year, epub_month, epub_day)]
     prod.epub = ['-'.join(e) if e[0] != None and e[1] != None and e[2] != None else None for e in epub]
     prod.ciber = [1 if 'CIBER' in affiliation else 0 for affiliation in prod.affiliations]
-    prod.if_when_published = [jcr[jcr['Revista'] == journal]['IF' + str(year)].values[0] if 'IF' + str(year) in jcr.columns and len(jcr[jcr['Revista'] == journal]['IF' + str(year)].values) > 0 else None for journal, year in zip(prod.journal, prod.year)]
-    prod.quantile_when_published = [jcr[jcr['Revista'] == journal]['Q' + str(year)].values[0] if 'Q' + str(year) in jcr.columns and len(jcr[jcr['Revista'] == journal]['Q' + str(year)].values) > 0 else None for journal, year in zip(prod.journal, prod.year)]
-    prod.if_actual = [jcr[jcr['Revista'] == journal]['IF' + str(current_year)].values[0] if 'IF' + str(current_year) in jcr.columns and len(jcr[jcr['Revista'] == journal]['IF' + str(current_year)].values) > 0 else None for journal in prod.journal]
-    prod.quantile_actual = [jcr[jcr['Revista'] == journal]['Q' + str(current_year)].values[0] if 'Q' + str(current_year) in jcr.columns and len(jcr[jcr['Revista'] == journal]['Q' + str(current_year)].values) > 0 else None for journal in prod.journal]
+    if jcr is not None:
+        prod.if_when_published = [jcr[jcr['Revista'] == journal]['IF' + str(year)].values[0] if 'IF' + str(year) in jcr.columns and len(jcr[jcr['Revista'] == journal]['IF' + str(year)].values) > 0 else None for journal, year in zip(prod.journal, prod.year)]
+        prod.quantile_when_published = [jcr[jcr['Revista'] == journal]['Q' + str(year)].values[0] if 'Q' + str(year) in jcr.columns and len(jcr[jcr['Revista'] == journal]['Q' + str(year)].values) > 0 else None for journal, year in zip(prod.journal, prod.year)]
+        prod.if_actual = [jcr[jcr['Revista'] == journal]['IF' + str(current_year)].values[0] if 'IF' + str(current_year) in jcr.columns and len(jcr[jcr['Revista'] == journal]['IF' + str(current_year)].values) > 0 else None for journal in prod.journal]
+        prod.quantile_actual = [jcr[jcr['Revista'] == journal]['Q' + str(current_year)].values[0] if 'Q' + str(current_year) in jcr.columns and len(jcr[jcr['Revista'] == journal]['Q' + str(current_year)].values) > 0 else None for journal in prod.journal]
     prod.corresponging_author_email = prod.affiliations.apply(lambda x: [get_email(text) for text in x.split('; ') if '@' in text])
 
 def get_email(text):
@@ -276,11 +276,12 @@ def save_results_if(df):
         on_click = downloaded()
     )
 
-def create_dataframe(pmids_file, authors_file, jcr_file):
+def create_dataframe(pmids_file, authors_file, jcr_file=None):
 # READ FILES
     global jcr, names_df
     df = pd.read_excel(pmids_file, header = None)
-    jcr = pd.DataFrame(pd.read_excel(jcr_file))
+    if jcr_file is not None:
+        jcr = pd.DataFrame(pd.read_excel(jcr_file))
     names_df = pd.DataFrame(pd.read_excel(authors_file))
 
     #check if the first column contains data or not
@@ -320,11 +321,7 @@ def login_to_website(username, password):
     
     # Initialize the service with the path to ChromeDriver executable
     #service = Service(chrome_driver_path)
-
-    session = requests.Session()
-    session.mount('http://', requests.adapters.HTTPAdapter(pool_connections=10, pool_maxsize=10))
-    session.mount('https://', requests.adapters.HTTPAdapter(pool_connections=10, pool_maxsize=10))
-  
+    
     # Initialize WebDriver with the provided options and service
     driver = webdriver.Chrome(options=chrome_options)#,service=service, )
     driver.get(login_url)
@@ -341,7 +338,7 @@ def login_to_website(username, password):
     login_button.click()
 
     # Wait for the login to complete, you may need to adjust the sleep time
-    time.sleep(10)
+    time.sleep(5)
 
     return driver  # Return the driver with the authenticated session
 
@@ -358,7 +355,7 @@ def get_impact_factor(driver, journal_name,if_year):
     driver.get(search_url)
 
     # Wait for the page to load, you may need to adjust the sleep time
-    time.sleep(10)
+    time.sleep(5)
 
     # Get the page source after JavaScript execution
     page_source = driver.page_source
@@ -436,6 +433,29 @@ def registro_publicaciones ():
             create_dataframe(uploaded_file_pmids,uploaded_file_authors,uploaded_file_jcr) 
             save_results_publications()
 
+def registro_publicaciones_sin_if():
+    st.write("# Generar Registro de Publicaciones")
+    global current_year
+    current_year = st.selectbox(
+        "Cual es el año de IF actual?",
+        ("2030","2029","2028","2027","2026","2025","2024","2023","2022", "2021", "2020"),
+        index=None,
+        placeholder="Escoge un año",
+    )
+    if current_year:
+        uploaded_file_pmids = st.file_uploader("PMIDS")
+        uploaded_file_authors= st.file_uploader("NOMBRES DE LOS AUTORES")
+
+        if 'clicked' not in st.session_state:
+            st.session_state.clicked = False
+
+        st.button('Extraer Información', on_click=upload_clicked)
+
+        if st.session_state.clicked and uploaded_file_pmids is not None and uploaded_file_authors is not None:
+            st.write('Archivos cargados correctamente')
+            create_dataframe(uploaded_file_pmids,uploaded_file_authors) 
+            save_results_publications()
+
 def actualizar_if():
     st.write("# Actualizar Impact Factor")
     global if_year
@@ -460,7 +480,8 @@ def actualizar_if():
 page_names_to_funcs = {
     "Inicio": intro,
     "Actualizar Impact Factor": actualizar_if,
-    "Generar Registro de Publicaciones": registro_publicaciones
+    "Generar Registro de Publicaciones": registro_publicaciones,
+    "Generar Registro de Publicaciones": registro_publicaciones_sin_if
 }
 
 demo_name = st.sidebar.selectbox("Choose a demo", page_names_to_funcs.keys())
