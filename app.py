@@ -358,7 +358,7 @@ def get_impact_factor(driver, journal_name,if_year):
     driver.get(search_url)
 
     # Wait for the page to load, you may need to adjust the sleep time
-    time.sleep(5)
+    time.sleep(10)
 
     # Get the page source after JavaScript execution
     page_source = driver.page_source
