@@ -72,7 +72,7 @@ def extract_articles_from_pmids(pmids):
         #extract articles
         try:
             articles[pmid] = fetch.article_by_pmid(pmid)
-            timer_duration = 40  # 40 seconds
+            timer_duration = 45  # 45 seconds
 
         except:
             while True:
@@ -358,7 +358,7 @@ def get_impact_factor(driver, journal_name,if_year):
     driver.get(search_url)
 
     # Wait for the page to load, you may need to adjust the sleep time
-    time.sleep(10)
+    time.sleep(15)
 
     # Get the page source after JavaScript execution
     page_source = driver.page_source
