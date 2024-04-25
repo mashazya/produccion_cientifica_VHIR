@@ -19,6 +19,7 @@ from bs4 import BeautifulSoup
 from urllib.parse import quote
 from selenium.webdriver.chrome.options import Options
 import urllib3
+import requests
 
 
 # ------------------ Global Variables ------------------ #
