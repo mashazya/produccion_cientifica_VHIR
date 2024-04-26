@@ -407,7 +407,7 @@ def run_scrapping(if_xlm):
             if_xlm.loc[idx, colif] = str(impact_factor)
             if_xlm.loc[idx, colq] = str(quantile)
 
-        percent_complete = int((idx+1)*100/if_xlm.shape[0]+1)
+        percent_complete = int((idx+1)*100/(if_xlm.shape[0]+1))
     my_bar.progress(100, text=progress_text)
     my_bar.empty()
     return if_xlm
@@ -455,7 +455,7 @@ def actualizar_if():
                 st.write('Archivo cargado correctamente')
                 new_if = run_scrapping(uploaded_file_if) 
                 save_results_if(new_if)
-
+    return
 
 page_names_to_funcs = {
     "Inicio": intro,
