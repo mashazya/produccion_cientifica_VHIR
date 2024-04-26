@@ -58,7 +58,10 @@ def intro():
     """
     )
 def upload_clicked():
-    st.session_state.clicked = not st.session_state.clicked
+    #st.session_state.clicked = not st.session_state.clicked
+  st.write('Archivo cargado correctamente')
+  new_if = run_scrapping(uploaded_file_if) 
+  save_results_if(new_if)
 
 def extract_articles_from_pmids(pmids):
     progress_text = "Extrayendo informacion de artículos"
@@ -455,10 +458,10 @@ def actualizar_if():
             if 'clicked' not in st.session_state:
                 st.session_state.clicked = False
             st.button('Actualizar', on_click=upload_clicked)
-            if st.session_state.clicked:
-                st.write('Archivo cargado correctamente')
-                new_if = run_scrapping(uploaded_file_if) 
-                save_results_if(new_if)
+            #if st.session_state.clicked:
+               # st.write('Archivo cargado correctamente')
+               # new_if = run_scrapping(uploaded_file_if) 
+               # save_results_if(new_if)
 
 page_names_to_funcs = {
     "Inicio": intro,
