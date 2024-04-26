@@ -390,9 +390,9 @@ def run_scrapping(if_xlm):
     if_xlm = pd.read_excel(if_xlm, sheet_name=f'IF {if_year}')
     authenticated_driver = login_to_website(username, password)
     if f'IF{if_year}' not in if_xlm.columns:
-        if_xlm[f'IF{if_year}'] = ''
+        if_xlm[f'IF{if_year}'] = pd.na
     if f'Q{if_year}' not in if_xlm.columns:
-        if_xlm[f'Q{if_year}'] = ''
+        if_xlm[f'Q{if_year}'] = pd.na
     if_xlm[f'IF{if_year}'] = if_xlm[f'IF{if_year}'].astype('object')
     if_xlm[f'Q{if_year}'] = if_xlm[f'Q{if_year}'].astype('object')
     progress_text = "Buscando artículos...."
@@ -457,11 +457,11 @@ def actualizar_if():
         if uploaded_file_if:
             if 'clicked' not in st.session_state:
                 st.session_state.clicked = False
-            st.button('Actualizar', on_click=upload_clicked(uploaded_file_if))
+            #st.button('Actualizar', on_click=upload_clicked(uploaded_file_if))
             #if st.session_state.clicked:
-               # st.write('Archivo cargado correctamente')
-               # new_if = run_scrapping(uploaded_file_if) 
-               # save_results_if(new_if)
+            st.write('Archivo cargado correctamente')
+            new_if = run_scrapping(uploaded_file_if) 
+            save_results_if(new_if)
 
 page_names_to_funcs = {
     "Inicio": intro,
