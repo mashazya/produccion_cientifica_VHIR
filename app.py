@@ -380,7 +380,7 @@ def get_impact_factor(driver, journal_name,if_year):
         save_url = search_url #if found correct year, else all years
         return impact_factor, quantile
     else:
-        return today, None
+        return today, ''
     
 def run_scrapping(if_xlm):
     global if_year
@@ -407,7 +407,7 @@ def run_scrapping(if_xlm):
             if_xlm.loc[idx, colif] = str(impact_factor)
             if_xlm.loc[idx, colq] = str(quantile)
 
-        percent_complete = int((idx+1)*100/len(if_xlm))
+        percent_complete = int((idx+1)*100/if_xlm.shape[0]+1)
     my_bar.progress(100, text=progress_text)
     my_bar.empty()
     return if_xlm
