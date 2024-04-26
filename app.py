@@ -385,8 +385,7 @@ def get_impact_factor(driver, journal_name,if_year):
 def run_scrapping(if_xlm):
     global if_year
     if_xlm = pd.read_excel(if_xlm, sheet_name=f'IF {if_year}')
-    # link_xlm = pd.read_excel(if_xlm, sheet_name=f'LINK')
-    authenticated_driver = login_to_website(username, password)
+    #authenticated_driver = login_to_website(username, password)
     if f'IF{if_year}' not in if_xlm.columns:
         if_xlm[f'IF{if_year}'] = ''
     if f'Q{if_year}' not in if_xlm.columns:
@@ -394,9 +393,14 @@ def run_scrapping(if_xlm):
     if_xlm[f'IF{if_year}'] = if_xlm[f'IF{if_year}'].astype('object')
     if_xlm[f'Q{if_year}'] = if_xlm[f'Q{if_year}'].astype('object')
     progress_text = "Buscando artículos...."
-    my_bar = st.progress(0, text=progress_text)
+    my_bar = st.progress(1, text=progress_text)
     percent_complete = 0
     for idx, row in if_xlm.iterrows():
+        if (idx+1) % 80 == 0:
+          time.sleep(10)
+          st.write('80 done')
+          authenticated_driver = login_to_website(username, password)
+
         my_bar.progress(percent_complete, text=progress_text)
         if pd.isna(row[f'IF{if_year}']):
             impact_factor, quantile = get_impact_factor(authenticated_driver, row.Revista,if_year)
