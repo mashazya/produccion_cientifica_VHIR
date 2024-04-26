@@ -385,7 +385,7 @@ def get_impact_factor(driver, journal_name,if_year):
 def run_scrapping(if_xlm):
     global if_year
     if_xlm = pd.read_excel(if_xlm, sheet_name=f'IF {if_year}')
-    #authenticated_driver = login_to_website(username, password)
+    authenticated_driver = login_to_website(username, password)
     if f'IF{if_year}' not in if_xlm.columns:
         if_xlm[f'IF{if_year}'] = ''
     if f'Q{if_year}' not in if_xlm.columns:
