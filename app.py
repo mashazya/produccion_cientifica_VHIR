@@ -459,7 +459,6 @@ def actualizar_if():
                 st.write('Archivo cargado correctamente')
                 new_if = run_scrapping(uploaded_file_if) 
                 save_results_if(new_if)
-    return
 
 page_names_to_funcs = {
     "Inicio": intro,
