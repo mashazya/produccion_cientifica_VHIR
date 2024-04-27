@@ -396,9 +396,9 @@ def run_scrapping(if_xlm):
     my_bar = st.progress(1, text=progress_text)
     percent_complete = 0
     for idx, row in if_xlm.iterrows():
-        if (idx+1) % 70 == 0:
+        if (idx+1) % 40 == 0:
           time.sleep(10)
-          st.write('70 done')
+          st.write('40 done')
           authenticated_driver = login_to_website(username, password)
 
         my_bar.progress(percent_complete, text=progress_text)
