@@ -57,11 +57,8 @@ def intro():
         Esta aplicación permite extraer información de artículos científicos a partir de sus PMIDs y generar un registro de publicaciones y actualizar los valors de IF de un año concreto.
     """
     )
-def upload_clicked(uploaded_file_if):
-    #st.session_state.clicked = not st.session_state.clicked
-  st.write('Archivo cargado correctamente')
-  new_if = run_scrapping(uploaded_file_if) 
-  save_results_if(new_if)
+def upload_clicked():
+  st.session_state.clicked = not st.session_state.clicked
 
 def extract_articles_from_pmids(pmids):
     progress_text = "Extrayendo informacion de artículos"
@@ -459,11 +456,11 @@ def actualizar_if():
             first = False
             if 'clicked' not in st.session_state:
                 st.session_state.clicked = False
-            #st.button('Actualizar', on_click=upload_clicked(uploaded_file_if))
-            #if st.session_state.clicked:
-            st.write('Archivo cargado correctamente')
-            new_if = run_scrapping(uploaded_file_if) 
-            save_results_if(new_if)
+            st.button('Actualizar', on_click=upload_clicked)
+            if st.session_state.clicked:
+                st.write('Archivo cargado correctamente')
+                new_if = run_scrapping(uploaded_file_if) 
+                save_results_if(new_if)
 
 page_names_to_funcs = {
     "Inicio": intro,
