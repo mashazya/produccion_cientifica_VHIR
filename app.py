@@ -443,7 +443,8 @@ def registro_publicaciones ():
             create_dataframe(uploaded_file_pmids,uploaded_file_authors,uploaded_file_jcr) 
             save_results_publications()
 
-def actualizar_if(first = False):
+def actualizar_if():
+    first = True
     st.write("# Actualizar Impact Factor")
     global if_year
     if_year = st.selectbox(
@@ -452,9 +453,10 @@ def actualizar_if(first = False):
         index=None,
         placeholder="Escoge un año",
     )
-    if  if_year:
+    if if_year:
         uploaded_file_if = st.file_uploader("IMPACT FACTOR")
         if uploaded_file_if and first:
+            first = False
             if 'clicked' not in st.session_state:
                 st.session_state.clicked = False
             #st.button('Actualizar', on_click=upload_clicked(uploaded_file_if))
@@ -465,7 +467,7 @@ def actualizar_if(first = False):
 
 page_names_to_funcs = {
     "Inicio": intro,
-    "Actualizar Impact Factor": actualizar_if(True),
+    "Actualizar Impact Factor": actualizar_if,
     "Generar Registro de Publicaciones": registro_publicaciones
 }
 
