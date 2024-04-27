@@ -75,7 +75,7 @@ def extract_articles_from_pmids(pmids):
         #extract articles
         try:
             articles[pmid] = fetch.article_by_pmid(pmid)
-            timer_duration = 45  # 45 seconds
+            timer_duration = 40  # 40 seconds
 
         except:
             while True:
