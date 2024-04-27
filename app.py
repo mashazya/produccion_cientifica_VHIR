@@ -399,9 +399,9 @@ def run_scrapping(if_xlm):
     my_bar = st.progress(1, text=progress_text)
     percent_complete = 0
     for idx, row in if_xlm.iterrows():
-        if (idx+1) % 80 == 0:
+        if (idx+1) % 70 == 0:
           time.sleep(10)
-          st.write('80 done')
+          st.write('70 done')
           authenticated_driver = login_to_website(username, password)
 
         my_bar.progress(percent_complete, text=progress_text)
@@ -443,7 +443,7 @@ def registro_publicaciones ():
             create_dataframe(uploaded_file_pmids,uploaded_file_authors,uploaded_file_jcr) 
             save_results_publications()
 
-def actualizar_if():
+def actualizar_if(first = False):
     st.write("# Actualizar Impact Factor")
     global if_year
     if_year = st.selectbox(
@@ -454,7 +454,7 @@ def actualizar_if():
     )
     if  if_year:
         uploaded_file_if = st.file_uploader("IMPACT FACTOR")
-        if uploaded_file_if:
+        if uploaded_file_if and first:
             if 'clicked' not in st.session_state:
                 st.session_state.clicked = False
             #st.button('Actualizar', on_click=upload_clicked(uploaded_file_if))
@@ -465,7 +465,7 @@ def actualizar_if():
 
 page_names_to_funcs = {
     "Inicio": intro,
-    "Actualizar Impact Factor": actualizar_if,
+    "Actualizar Impact Factor": actualizar_if(True),
     "Generar Registro de Publicaciones": registro_publicaciones
 }
 
