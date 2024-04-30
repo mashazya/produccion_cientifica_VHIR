@@ -135,10 +135,11 @@ def create_dataframe_from_articles(pmids):
     epub = [list(date) for date in zip(epub_year, epub_month, epub_day)]
     prod.epub = ['-'.join(e) if e[0] != None and e[1] != None and e[2] != None else None for e in epub]
     prod.ciber = [1 if 'CIBER' in affiliation else 0 for affiliation in prod.affiliations]
-    prod.if_when_published = [jcr[jcr['Revista'] == journal]['IF' + str(year)].values[0] if 'IF' + str(year) in jcr.columns and len(jcr[jcr['Revista'] == journal]['IF' + str(year)].values) > 0 else None for journal, year in zip(prod.journal, prod.year)]
-    prod.quantile_when_published = [jcr[jcr['Revista'] == journal]['Q' + str(year)].values[0] if 'Q' + str(year) in jcr.columns and len(jcr[jcr['Revista'] == journal]['Q' + str(year)].values) > 0 else None for journal, year in zip(prod.journal, prod.year)]
-    prod.if_actual = [jcr[jcr['Revista'] == journal]['IF' + str(current_year)].values[0] if 'IF' + str(current_year) in jcr.columns and len(jcr[jcr['Revista'] == journal]['IF' + str(current_year)].values) > 0 else None for journal in prod.journal]
-    prod.quantile_actual = [jcr[jcr['Revista'] == journal]['Q' + str(current_year)].values[0] if 'Q' + str(current_year) in jcr.columns and len(jcr[jcr['Revista'] == journal]['Q' + str(current_year)].values) > 0 else None for journal in prod.journal]
+    if not jcr.empty and jcr is not None:
+        prod.if_when_published = [jcr[jcr['Revista'] == journal]['IF' + str(year)].values[0] if 'IF' + str(year) in jcr.columns and len(jcr[jcr['Revista'] == journal]['IF' + str(year)].values) > 0 else None for journal, year in zip(prod.journal, prod.year)]
+        prod.quantile_when_published = [jcr[jcr['Revista'] == journal]['Q' + str(year)].values[0] if 'Q' + str(year) in jcr.columns and len(jcr[jcr['Revista'] == journal]['Q' + str(year)].values) > 0 else None for journal, year in zip(prod.journal, prod.year)]
+        prod.if_actual = [jcr[jcr['Revista'] == journal]['IF' + str(current_year)].values[0] if 'IF' + str(current_year) in jcr.columns and len(jcr[jcr['Revista'] == journal]['IF' + str(current_year)].values) > 0 else None for journal in prod.journal]
+        prod.quantile_actual = [jcr[jcr['Revista'] == journal]['Q' + str(current_year)].values[0] if 'Q' + str(current_year) in jcr.columns and len(jcr[jcr['Revista'] == journal]['Q' + str(current_year)].values) > 0 else None for journal in prod.journal]
     prod.corresponging_author_email = prod.affiliations.apply(lambda x: [get_email(text) for text in x.split('; ') if '@' in text])
 
 def get_email(text):
@@ -264,6 +265,7 @@ def save_results_publications():
         on_click = downloaded()
     )
 
+
 def save_results_if(df):
     global if_year
     xlm = convert_if(df)
@@ -276,11 +278,12 @@ def save_results_if(df):
         on_click = downloaded()
     )
 
-def create_dataframe(pmids_file, authors_file, jcr_file):
+def create_dataframe(pmids_file, authors_file, jcr_file=None):
 # READ FILES
     global jcr, names_df
     df = pd.read_excel(pmids_file, header = None)
-    jcr = pd.DataFrame(pd.read_excel(jcr_file))
+    if jcr_file:
+        jcr = pd.DataFrame(pd.read_excel(jcr_file))
     names_df = pd.DataFrame(pd.read_excel(authors_file))
 
     #check if the first column contains data or not
@@ -330,7 +333,7 @@ def login_to_website(username, password):
     driver.get(login_url)
   
     # Wait for the login page to load, you may need to adjust the sleep time
-    time.sleep(5)
+    time.sleep(10)
     # Find the login form elements and enter credentials
     username_input = driver.find_element("css selector", "input[name='email']")  # replace with the actual CSS selector of the username field
     password_input = driver.find_element("css selector", "input[name='password']")  # replace with the actual CSS selector of the password field
@@ -396,10 +399,11 @@ def run_scrapping(if_xlm):
     my_bar = st.progress(1, text=progress_text)
     percent_complete = 0
     for idx, row in if_xlm.iterrows():
-        if (idx+1) % 40 == 0:
-          time.sleep(10)
-          st.write('40 done')
-          authenticated_driver = login_to_website(username, password)
+        # if (idx+1) % 40 == 0:
+        #   time.sleep(10)
+        #   st.write('40 done')
+        #   del authenticated_driver
+        #   authenticated_driver = login_to_website(username, password)
 
         my_bar.progress(percent_complete, text=progress_text)
         if pd.isna(row[f'IF{if_year}']):
@@ -440,6 +444,21 @@ def registro_publicaciones ():
             create_dataframe(uploaded_file_pmids,uploaded_file_authors,uploaded_file_jcr) 
             save_results_publications()
 
+def registro_publicaciones_no_if ():
+    st.write("# Generar Registro de Publicaciones")
+    uploaded_file_pmids = st.file_uploader("PMIDS")
+    uploaded_file_authors= st.file_uploader("NOMBRES DE LOS AUTORES")
+
+    if 'clicked' not in st.session_state:
+        st.session_state.clicked = False
+
+    st.button('Extraer Información', on_click=upload_clicked)
+
+    if st.session_state.clicked and uploaded_file_pmids is not None and uploaded_file_authors is not None :
+        st.write('Archivos cargados correctamente')
+        create_dataframe(uploaded_file_pmids,uploaded_file_authors) 
+        save_results_publications()
+
 def actualizar_if():
     first = True
     st.write("# Actualizar Impact Factor")
@@ -465,7 +484,8 @@ def actualizar_if():
 page_names_to_funcs = {
     "Inicio": intro,
     "Actualizar Impact Factor": actualizar_if,
-    "Generar Registro de Publicaciones": registro_publicaciones
+    "Generar Registro de Publicaciones": registro_publicaciones,
+    "Registro de publicaciones sin IF": registro_publicaciones_no_if,
 }
 
 demo_name = st.sidebar.selectbox("Choose a demo", page_names_to_funcs.keys())
