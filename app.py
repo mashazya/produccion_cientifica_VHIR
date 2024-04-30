@@ -27,7 +27,7 @@ import requests
 prod = pd.DataFrame(columns=[
                             'pmid','title', 'authors','journal','year','pagination',
                             'volume','issue', 'day_when_published','month_when_published', 
-                            'authors_full_name','affiliations', 'corresponging_author_email', 'epub', 'ciber', 'if_actual', 'quantile_actual',
+                            'authors_full_name','affiliations', 'corresponging_author_email', 'epub', 'ciberesp','cibercv', 'if_actual', 'quantile_actual',
                             'if_when_published', 'quantile_when_published', 'type', 'doi'
                             ]
                     )
@@ -134,7 +134,9 @@ def create_dataframe_from_articles(pmids):
     epub_day = [epubdate[pmid]['ArticleDate']['Day'] if 'ArticleDate' in epubdate[pmid].keys() else None for pmid in pmids]
     epub = [list(date) for date in zip(epub_year, epub_month, epub_day)]
     prod.epub = ['-'.join(e) if e[0] != None and e[1] != None and e[2] != None else None for e in epub]
-    prod.ciber = [1 if 'CIBER' in affiliation else 0 for affiliation in prod.affiliations]
+    #prod.ciber = [1 if 'CIBER' in affiliation else 0 for affiliation in prod.affiliations]
+    prod.ciberesp = [1 if 'CIBERESP' in affiliation else 0 for affiliation in prod.affiliations]
+    prod.cibercv = [1 if 'CIBERCV' in affiliation else 0 for affiliation in prod.affiliations]
     if not jcr.empty and jcr is not None:
         prod.if_when_published = [jcr[jcr['Revista'] == journal]['IF' + str(year)].values[0] if 'IF' + str(year) in jcr.columns and len(jcr[jcr['Revista'] == journal]['IF' + str(year)].values) > 0 else None for journal, year in zip(prod.journal, prod.year)]
         prod.quantile_when_published = [jcr[jcr['Revista'] == journal]['Q' + str(year)].values[0] if 'Q' + str(year) in jcr.columns and len(jcr[jcr['Revista'] == journal]['Q' + str(year)].values) > 0 else None for journal, year in zip(prod.journal, prod.year)]
@@ -192,11 +194,11 @@ def create_authors_columns(pmids):
     names = [strip_accents(name).lower() for name in names_df.author_name.values] # full author names from VHIR
     name_cols = [name.replace(' ', '_') for name in names]
     names_df['author_col'] = name_cols
-    cols = ['pmid', 'corresponding_authors', 'authors_full_name_normalized', 'ciberesp', 'cibercv', 'any_first', 'any_last', 'any_corresponding'] + name_cols
+    cols = ['pmid', 'corresponding_authors', 'authors_full_name_normalized', 'any_first', 'any_last', 'any_corresponding'] + name_cols
     authors_df = pd.DataFrame(columns = cols)
     authors_df.pmid = pmids
-    authors_df.ciberesp = 0
-    authors_df.cibercv = 0
+    #authors_df.ciberesp = 0
+    #authors_df.cibercv = 0
     authors_df.authors_full_name_normalized = prod.authors_full_name
     authors_df.authors_full_name_normalized = authors_df.authors_full_name_normalized.apply(lambda row: strip_accents(row).lower().split('; '))
     authors_df.corresponding_authors = prod.corresponging_author_email.apply(lambda row: corresponding_author(row) if len(row) > 0 else [])
@@ -254,7 +256,7 @@ def downloaded():
     upload_clicked()
 
 def save_results_publications():
-    prod.drop(columns=['authors_full_name_normalized','authors_full_name','ciber', 'corresponding_authors'], inplace=True)
+    prod.drop(columns=['authors_full_name_normalized','authors_full_name', 'corresponding_authors'], inplace=True)
     xlm = convert_pub(prod)
     st.write('Resultados creados correctamente')
     st.download_button(
@@ -303,7 +305,7 @@ def create_dataframe(pmids_file, authors_file, jcr_file=None):
 
     create_authors_columns(valid_pmids) 
 
-    check_ciber()
+    #check_ciber()
 
 @st.cache_resource(show_spinner=False)
 
